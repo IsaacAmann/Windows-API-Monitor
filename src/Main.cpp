@@ -1,11 +1,6 @@
 #define CURL_STATICLIB
 
 #include "Main.h"
-#include <detours.h>
-#include <curl.h>
-#include <Windows.h>
-#include <Psapi.h>
-#include <tchar.h>
 
 int main()
 {

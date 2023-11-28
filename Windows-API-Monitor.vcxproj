@@ -136,9 +136,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Monitoring\ProcessMonitor.cpp" />
+    <ClCompile Include="src\Monitoring\TrackedProcess.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Main.h" />
+    <ClInclude Include="src\Monitoring\ProcessMonitor.h" />
+    <ClInclude Include="src\Monitoring\TrackedProcess.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
