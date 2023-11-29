@@ -7,6 +7,7 @@
 #include <string>
 #include <thread>
 #include <mutex>
+#include <unordered_map>
 #include "TrackedProcess.h"
 
 
@@ -24,7 +25,7 @@ class ProcessMonitor
 		std::thread* managerThread;
 		int number;
 	private:
-		std::vector<TrackedProcess> processList;
+		std::unordered_map<DWORD, TrackedProcess*> processList;
 };
 
 void managerThreadExecute(ProcessMonitor* monitor);

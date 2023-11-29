@@ -23,4 +23,7 @@ class TrackedProcess
 	private:
 		//Get process info on startup
 		void getProcessInfo();
+		//Update fields including processRunning
+		void getProcessUpdate();
+
 };

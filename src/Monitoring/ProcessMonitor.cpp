@@ -39,15 +39,42 @@ void ProcessMonitor::scanForProcesses()
 		HANDLE process = OpenProcess(PROCESS_ALL_ACCESS, FALSE, processes[i]);
 		std::cout << GetLastError() << std::endl;
 
-		if (EnumProcessModules(process, &mod, sizeof(mod), &cbNeeded))
+		TrackedProcess* currentTrackedProcess;
+		//Look up process by PID on processList hashmap
+		try
 		{
-			GetModuleBaseName(process, mod, currentName, sizeof(currentName) / sizeof(TCHAR));
-			GetProcessImageFileName(process, currentFileName, sizeof(currentFileName) / sizeof(TCHAR));
-
+			currentTrackedProcess = processList.at(processes[i]);
 		}
+		catch (int e)
+		{
+			currentTrackedProcess = NULL;
+		}
+		if (currentTrackedProcess != NULL)
+		{
+			//Check that the process in the trackedProcess object has not closed (Catches the case of a collision of an old PID)
+			if (currentTrackedProcess->processRunning == true)
+			{
+				//Do not need to add to hashmap
+			}
+			else
+			{
+				//Process at PID has closed
 
-		_tprintf(TEXT("%s  (PID: %u)\n"), currentName, processes[i]);
-		_tprintf(TEXT("Executable Path: %s\n"), currentFileName);
-		CloseHandle(process);
+				//Handle TrackedProcess clean up
+
+				//Delete TrackedProcess object and remove from hashmap
+
+				//Add new TrackedProcess object to hashmap
+			}
+		}
+		else
+		{
+			//new Process and no collision with old PID
+			//Create TrackedProcess object
+			currentTrackedProcess = new TrackedProcess(process, processes[i]);
+
+			//Add to hashmap
+			processList.at(processes[i]) = currentTrackedProcess;
+		}
 	}
 }
