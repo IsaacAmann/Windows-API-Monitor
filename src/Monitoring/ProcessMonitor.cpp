@@ -41,11 +41,11 @@ void ProcessMonitor::scanForProcesses()
 
 		TrackedProcess* currentTrackedProcess;
 		//Look up process by PID on processList hashmap
-		try
+		if (processList.find(processes[i]) != processList.end())
 		{
 			currentTrackedProcess = processList.at(processes[i]);
 		}
-		catch (int e)
+		else
 		{
 			currentTrackedProcess = NULL;
 		}
@@ -72,9 +72,10 @@ void ProcessMonitor::scanForProcesses()
 			//new Process and no collision with old PID
 			//Create TrackedProcess object
 			currentTrackedProcess = new TrackedProcess(process, processes[i]);
-
+			currentTrackedProcess->printProcessInfo();
 			//Add to hashmap
-			processList.at(processes[i]) = currentTrackedProcess;
+			processList.insert(std::make_pair(processes[i], currentTrackedProcess));
+
 		}
 	}
 }
