@@ -9,7 +9,7 @@ int main()
 	monitor = new(ProcessMonitor);
 	//monitor.scanForProcesses();
 	monitor->initialize();
-
+	std::cout << "main thread" << std::endl;
 
 
 	while (true);

@@ -1,38 +1,22 @@
 #include "ProcessMonitor.h"
-int ProcessMonitor::getNumber()
+
+ProcessMonitor::~ProcessMonitor()
 {
-	return this->number;
+	delete managerThread;
+
 }
+
 bool ProcessMonitor::initialize()
 {
 	//Create thread for managing tracked processes
-	struct ManagerThreadParameter* param = (struct ManagerThreadParameter*) malloc(sizeof(struct ManagerThreadParameter));
-	number = 2;
-	param->monitor = this;
-	managerThread = (HANDLE)CreateThread(NULL, 0, managerThreadExecute, this, 0, NULL);
-	//WaitForSingleObject(managerThread, INFINITE);
+	managerThread = new std::thread(managerThreadExecute, this);
 	return true;
 }
 
- DWORD WINAPI managerThreadExecute(LPVOID lpParam)
+void managerThreadExecute(ProcessMonitor* monitor)
 {
-	TCHAR messageBuffer[300];
-	size_t cchStringSize;
-	DWORD dwChars;
-
-	struct ManagerThreadParameter* param = (struct ManagerThreadParameter*)lpParam;
-
+	std::cout << "Manager Thread Running " << monitor->number << std::endl;
 	
-	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-	StringCchPrintf(messageBuffer, 300, TEXT("Test from manager thread"));
-	StringCchLength(messageBuffer, 300, &cchStringSize);
-	WriteConsole(hStdout, messageBuffer, (DWORD)cchStringSize, &dwChars, NULL);
-
-	std::cout << "Unsafe print" << std::endl;
-	param->monitor->scanForProcesses();
-	//std::cout << param->monitor->testString << std::endl;
-	printf("%d\n", param->monitor->getNumber());
-	return 0;
 }
 
 void ProcessMonitor::scanForProcesses()
