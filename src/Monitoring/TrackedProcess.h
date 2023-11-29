@@ -10,7 +10,17 @@
 class TrackedProcess
 {
 	public:
+		TrackedProcess(HANDLE processHandle, DWORD PID);
+		
+
+		bool processRunning;
+		TCHAR processName[MAX_PATH];
+		TCHAR processExecutablePath[MAX_PATH];
+		HANDLE processHandle;
+		DWORD PID;
+		void printProcessInfo();
 
 	private:
-
+		//Get process info on startup
+		void getProcessInfo();
 };

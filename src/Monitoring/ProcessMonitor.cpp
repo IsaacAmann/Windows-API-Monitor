@@ -46,7 +46,7 @@ void ProcessMonitor::scanForProcesses()
 
 		}
 
-		_tprintf(TEXT("%s  (PID: %u)\n"), currentName, i);
+		_tprintf(TEXT("%s  (PID: %u)\n"), currentName, processes[i]);
 		_tprintf(TEXT("Executable Path: %s\n"), currentFileName);
 		CloseHandle(process);
 	}
