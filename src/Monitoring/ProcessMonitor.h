@@ -4,7 +4,6 @@
 #include <Psapi.h>
 #include <tchar.h>
 #include <process.h>
-#include <strsafe.h>
 #include <string>
 #include <thread>
 #include <mutex>
@@ -21,16 +20,13 @@ class ProcessMonitor
 
 		void printProcessList();
 
+
 		std::thread* managerThread;
 		int number;
 	private:
 		std::vector<TrackedProcess> processList;
 };
 
-struct ManagerThreadParameter
-{
-	ProcessMonitor* monitor;
-
-};
-
 void managerThreadExecute(ProcessMonitor* monitor);
+
+

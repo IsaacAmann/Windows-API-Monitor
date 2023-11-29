@@ -16,7 +16,7 @@ bool ProcessMonitor::initialize()
 void managerThreadExecute(ProcessMonitor* monitor)
 {
 	std::cout << "Manager Thread Running " << monitor->number << std::endl;
-	
+	monitor->scanForProcesses();
 }
 
 void ProcessMonitor::scanForProcesses()
@@ -32,6 +32,7 @@ void ProcessMonitor::scanForProcesses()
 	for (int i = 0; i < numberProcess; i++)
 	{
 		TCHAR currentName[MAX_PATH] = TEXT("Blank");
+		TCHAR currentFileName[MAX_PATH] = TEXT("Blank");
 		HMODULE mod;
 		DWORD cbNeeded;
 		//HANDLE process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processes[i]);
@@ -41,10 +42,12 @@ void ProcessMonitor::scanForProcesses()
 		if (EnumProcessModules(process, &mod, sizeof(mod), &cbNeeded))
 		{
 			GetModuleBaseName(process, mod, currentName, sizeof(currentName) / sizeof(TCHAR));
+			GetProcessImageFileName(process, currentFileName, sizeof(currentFileName) / sizeof(TCHAR));
+
 		}
 
 		_tprintf(TEXT("%s  (PID: %u)\n"), currentName, i);
-
+		_tprintf(TEXT("Executable Path: %s\n"), currentFileName);
 		CloseHandle(process);
 	}
 }
