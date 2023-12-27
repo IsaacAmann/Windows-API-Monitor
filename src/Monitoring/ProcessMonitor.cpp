@@ -72,7 +72,7 @@ void ProcessMonitor::scanForProcesses()
 			//new Process and no collision with old PID
 			//Create TrackedProcess object
 			currentTrackedProcess = new TrackedProcess(process, processes[i]);
-			currentTrackedProcess->printProcessInfo();
+			//currentTrackedProcess->printProcessInfo();
 			//Add to hashmap
 			processList.insert(std::make_pair(processes[i], currentTrackedProcess));
 

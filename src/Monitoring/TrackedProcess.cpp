@@ -1,5 +1,6 @@
 #include "TrackedProcess.h"
 
+char libPath[MAX_PATH] = "C:\\Users\\isaac\\Documents\\programming\\Windows-API-Monitor\\x64\\Debug\\MonitorDLL.dll";
 
 TrackedProcess::TrackedProcess(HANDLE processHandle, DWORD PID)
 {
@@ -7,7 +8,34 @@ TrackedProcess::TrackedProcess(HANDLE processHandle, DWORD PID)
 	this->PID = PID;
 	processRunning = true;
 	getProcessInfo();
-	printProcessInfo();
+	//printProcessInfo();
+	if (PID == 13092)
+	{
+		attach();
+		std::cout << libPath << std::endl;
+		printProcessInfo();
+	}
+}
+
+//Load dll into process
+void TrackedProcess::attach()
+{
+	std::cout << "attaching\n";
+	
+	HANDLE threadHandle;
+	void* injectedLibAddress;
+	//LPCSTR modName = "Kernel32";
+	HMODULE hkernel32 = GetModuleHandleA("Kernel32");
+
+	//Allocate memory in target process 
+	injectedLibAddress = VirtualAllocEx(this->processHandle, NULL, sizeof(libPath), MEM_COMMIT, NULL);
+	//Write DLL path name to memory
+	WriteProcessMemory(this->processHandle, injectedLibAddress, (void*)libPath, sizeof(libPath), NULL);
+	//Create new thread and load dll into process
+	threadHandle = CreateRemoteThread(this->processHandle, NULL, 0, (LPTHREAD_START_ROUTINE)GetProcAddress(hkernel32, "LoadLibraryA"), injectedLibAddress, 0,  NULL);
+
+	WaitForSingleObject(threadHandle, INFINITE);
+	std::cout << "attached!\n";
 }
 
 void TrackedProcess::getProcessInfo()
@@ -26,6 +54,20 @@ void TrackedProcess::printProcessInfo()
 {
 	_tprintf(TEXT("%s  (PID: %u)\n"), processName, PID);
 	_tprintf(TEXT("Executable Path: %s\n"), processExecutablePath);
+
+	//List modules
+	HMODULE mod[1000];
+	DWORD cbNeeded;
+	
+	if (EnumProcessModules(processHandle, mod, sizeof(mod), &cbNeeded))
+	{
+		for (int i = 0; i < (cbNeeded / sizeof(HMODULE)); i++)
+		{
+			TCHAR modName[MAX_PATH];
+			GetModuleFileNameEx(processHandle, mod[i], modName, sizeof(modName) / sizeof(TCHAR));
+			_tprintf(TEXT("%s\n"), modName);
+		}
+	}
 }
 
 void TrackedProcess::getProcessUpdate()
