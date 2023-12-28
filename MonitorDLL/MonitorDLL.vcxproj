@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="kernel32Redirect.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
