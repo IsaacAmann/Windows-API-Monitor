@@ -4,21 +4,22 @@
 
 DWORD RedirectGetCurrentProcessId();
 
-VOID* buffer;
+char buffer[5] = { 0 };
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
                        LPVOID lpReserved
                      )
 {
-    buffer = (VOID*)malloc(5);
+    
     //Hook api calls
-    hookAPICalls();
+    
 
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
         std::cout << "Attach\n";
+        hookAPICalls();
         break;
     case DLL_THREAD_ATTACH:
         std::cout << "Thread Attach\n";
@@ -46,12 +47,16 @@ void hookAPICalls()
 
    ReadProcessMemory(GetCurrentProcess(), functionAddress, buffer, 5, &bytesRead);
    std::cout << "READ: " << bytesRead << std::endl;
+   for (int i = 0; i < 5; i++)
+   {
+       std::cout << buffer[i] << std::endl;
+   }
 
    proxyAddress = &RedirectGetCurrentProcessId;
    source = (DWORD)functionAddress + 5;
    destination = (DWORD)proxyAddress;
    relativeOffset = (DWORD*)(destination - source);
-   std::cout << "First: " << functionAddress;
+   std::cout << "First: " << functionAddress << std::endl;
    memcpy_s(patch, 1, "\xE9", 1);
    memcpy_s(patch + 1, 4, &relativeOffset, 4);
 
@@ -65,7 +70,7 @@ DWORD _stdcall RedirectGetCurrentProcessId()
     //unhook
     HINSTANCE hKernel32 = LoadLibraryA("kernel32.dll");
     VOID* functionAddress = GetProcAddress(hKernel32, "GetCurrentProcessId");
-    std::cout << "Second: " << functionAddress;
+    std::cout << "Second: " << functionAddress << std::endl;
     WriteProcessMemory(GetCurrentProcess(), (LPVOID)functionAddress, buffer, 5, NULL);
     
     
