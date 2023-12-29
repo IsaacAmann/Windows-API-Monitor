@@ -1,6 +1,7 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "pch.h"
-#include "kernel32Redirect.h"
+
+void hookAPICallSimple();
 
 DWORD RedirectGetCurrentProcessId();
 
@@ -19,7 +20,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     {
     case DLL_PROCESS_ATTACH:
         std::cout << "Attach\n";
-        hookAPICalls();
+        hookAPICallSimple();
         break;
     case DLL_THREAD_ATTACH:
         std::cout << "Thread Attach\n";
@@ -33,7 +34,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     return TRUE;
 }
 
-void hookAPICalls()
+void hookAPICallSimple()
 {
     VOID* proxyAddress;
     DWORD* relativeOffset;
