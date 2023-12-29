@@ -1,11 +1,17 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "pch.h"
 
+typedef DWORD (WINAPI* defTrampolineFunc)();
+
 void hookAPICallSimple();
 
-DWORD RedirectGetCurrentProcessId();
+void hookWithTrampoline();
 
-char buffer[5] = { 0 };
+DWORD RedirectGetCurrentProcessId();
+DWORD _stdcall trampolineGetCurrentProcessId();
+
+char hookAPICallSimpleBuffer[5] = { 0 };
+LPVOID trampolineAddress; 
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
@@ -13,14 +19,14 @@ BOOL APIENTRY DllMain( HMODULE hModule,
                      )
 {
     
-    //Hook api calls
     
 
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
         std::cout << "Attach\n";
-        hookAPICallSimple();
+       // hookAPICallSimple();
+        hookWithTrampoline();
         break;
     case DLL_THREAD_ATTACH:
         std::cout << "Thread Attach\n";
@@ -46,11 +52,11 @@ void hookAPICallSimple()
    HINSTANCE hKernel32 = LoadLibraryA("kernel32.dll");
    VOID* functionAddress = GetProcAddress(hKernel32, "GetCurrentProcessId");
 
-   ReadProcessMemory(GetCurrentProcess(), functionAddress, buffer, 5, &bytesRead);
+   ReadProcessMemory(GetCurrentProcess(), functionAddress, hookAPICallSimpleBuffer, 5, &bytesRead);
    std::cout << "READ: " << bytesRead << std::endl;
    for (int i = 0; i < 5; i++)
    {
-       std::cout << buffer[i] << std::endl;
+       std::cout << hookAPICallSimpleBuffer[i] << std::endl;
    }
 
    proxyAddress = &RedirectGetCurrentProcessId;
@@ -64,6 +70,51 @@ void hookAPICallSimple()
    WriteProcessMemory(GetCurrentProcess(), (LPVOID)functionAddress, patch, 5, NULL);
 }
 
+void hookWithTrampoline()
+{
+    HINSTANCE libHandle;
+    VOID* proxyAddress;
+    DWORD* relativeOffset;
+    DWORD* hookAddress;
+    DWORD source;
+    DWORD destination;
+    CHAR patch[5] = { 0 };
+    char buffer[5];
+    FARPROC functionAddress = NULL;
+
+    libHandle = LoadLibraryA("Kernel32.dll");
+    functionAddress = GetProcAddress(libHandle, "GetCurrentProcessId");
+
+    ReadProcessMemory(GetCurrentProcess(), functionAddress, buffer, 5, NULL);
+
+    proxyAddress = &trampolineGetCurrentProcessId;
+    source = (DWORD)functionAddress + 5; 
+    destination = (DWORD)proxyAddress;
+    relativeOffset = (DWORD*)(destination - source);
+    memcpy(patch, "\xE9", 1);
+    memcpy(patch + 1, &relativeOffset, 4);
+    WriteProcessMemory(GetCurrentProcess(), (LPVOID)functionAddress, patch, 5, NULL);
+
+    trampolineAddress = VirtualAlloc(NULL, 11, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+    hookAddress = (DWORD*)((DWORD)functionAddress + 5);
+    memcpy((BYTE*)trampolineAddress, &buffer, 5);
+    //x68 is PUSH assembly instruction
+    memcpy((BYTE*)trampolineAddress + 5, "\x68", 1);
+    memcpy((BYTE*)trampolineAddress + 6, &hookAddress, 4);
+    //xC3 is RETN assembly instruction
+    memcpy((BYTE*)trampolineAddress + 10, "\xC3", 1);
+    std::cout << "trampoline address: " << trampolineAddress << std::endl;
+}
+
+DWORD _stdcall trampolineGetCurrentProcessId()
+{
+    std::cout << "GetCurrentProcessId Called" << std::endl;
+    std::cout << "trampoline address: " << trampolineAddress << std::endl;
+
+    defTrampolineFunc trampoline = (defTrampolineFunc)trampolineAddress;
+    return trampoline();
+}
+
 DWORD _stdcall RedirectGetCurrentProcessId()
 {
     std::cout << "GetCurrentProcessId called\n";
@@ -72,7 +123,7 @@ DWORD _stdcall RedirectGetCurrentProcessId()
     HINSTANCE hKernel32 = LoadLibraryA("kernel32.dll");
     VOID* functionAddress = GetProcAddress(hKernel32, "GetCurrentProcessId");
     std::cout << "Second: " << functionAddress << std::endl;
-    WriteProcessMemory(GetCurrentProcess(), (LPVOID)functionAddress, buffer, 5, NULL);
+    WriteProcessMemory(GetCurrentProcess(), (LPVOID)functionAddress, hookAPICallSimpleBuffer, 5, NULL);
     
     
 

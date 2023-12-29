@@ -9,7 +9,7 @@ TrackedProcess::TrackedProcess(HANDLE processHandle, DWORD PID)
 	processRunning = true;
 	getProcessInfo();
 	//printProcessInfo();
-	if (PID == 17212)
+	if (PID == 7928)
 	{
 		attach();
 		std::cout << libPath << std::endl;
