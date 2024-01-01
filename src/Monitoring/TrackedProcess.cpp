@@ -1,7 +1,7 @@
 #include "TrackedProcess.h"
 
-char libPath[_MAX_PATH] = "C:\\Users\\isaac\\Documents\\programming\\Windows-API-Monitor\\x64\\Debug\\MonitorDLL.dll";
-
+char libPath[_MAX_PATH] = "C:\\Users\\isaac\\Documents\\programming\\Windows-API-Monitor\\x64\\Debug\\PolyHookMonitorDLL.dll";
+//char libPath[_MAX_PATH] = "C:\\Users\\isaac\\Documents\\programming\\Windows-API-Monitor\\x64\\Debug\\MonitorDLL.dll";
 TrackedProcess::TrackedProcess(HANDLE processHandle, DWORD PID)
 {
 	this->processHandle = processHandle;
@@ -9,7 +9,7 @@ TrackedProcess::TrackedProcess(HANDLE processHandle, DWORD PID)
 	processRunning = true;
 	getProcessInfo();
 	//printProcessInfo();
-	if (PID == 18636)
+	if (PID == 19968)
 	{
 		attach();
 		std::cout << libPath << std::endl;
