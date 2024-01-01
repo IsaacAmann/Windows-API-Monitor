@@ -149,10 +149,13 @@
   <ItemGroup>
     <ClInclude Include="dllmain.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Hooks\Hooks.h" />
+    <ClInclude Include="Hooks\Kernel32\Kernel32Hooks.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Hooks\Kernel32\Kernel32Hooks.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
