@@ -11,3 +11,5 @@
 void hookKernel32APICalls(std::vector<PLH::NatDetour *> *hooks);
 
 DWORD __stdcall hookGetCurrentProcessId();
+
+HANDLE __stdcall hookOpenProcess(DWORD dwDesiredAccess, BOOL bInheritHandle, DWORD dwProcessId);
