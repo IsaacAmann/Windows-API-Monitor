@@ -41,5 +41,8 @@
     <ClCompile Include="Hooks\Kernel32\Kernel32Hooks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Hooks\Hooks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

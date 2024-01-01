@@ -4,24 +4,26 @@
 uint64_t trampolineGetCurrentProcessId;
 uint64_t trampolineOpenProcess;
 
-void hookKernel32APICalls(std::vector<PLH::NatDetour*>* hooks)
+void hookKernel32APICalls(std::unordered_map<std::string, APICallCounter *> * hooks)
 {
     HMODULE kernel32 = LoadLibraryA("Kernel32.dll");
     //Hook GetCurrentProcessId
     uint64_t callBack = (uint64_t)hookGetCurrentProcessId;
     uint64_t targetAddress = (uint64_t)GetProcAddress(kernel32, "GetCurrentProcessId");
     PLH::NatDetour* currentHook = NULL;
+    APICallCounter* currentCounter = NULL;
 
     currentHook = new PLH::NatDetour(targetAddress, callBack, &trampolineGetCurrentProcessId);
-    currentHook->hook();
-    hooks->push_back(currentHook);
+    currentCounter = new APICallCounter(currentHook, "GetCurrentProcessId", hooks);
+
 
     //Hook OpenProcess
     callBack = (uint64_t)hookOpenProcess;
     targetAddress = (uint64_t)GetProcAddress(kernel32, "OpenProcess");
     currentHook = new PLH::NatDetour(targetAddress, callBack, &trampolineOpenProcess);
-    currentHook->hook();
-    hooks->push_back(currentHook);
+    currentCounter = new APICallCounter(currentHook, "OpenProcess", hooks);
+
+
 
 }
 
