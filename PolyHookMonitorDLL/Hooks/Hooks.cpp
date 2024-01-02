@@ -11,3 +11,9 @@ APICallCounter::APICallCounter(PLH::NatDetour* hook, std::string callName, std::
 
 	hook->hook();
 }
+
+void APICallCounter::incrementCall()
+{
+	numberCalls++;
+	//send message
+}
