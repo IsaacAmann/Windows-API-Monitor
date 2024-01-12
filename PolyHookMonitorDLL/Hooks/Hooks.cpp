@@ -16,4 +16,14 @@ void APICallCounter::incrementCall()
 {
 	numberCalls++;
 	//send message
+    CountUpdateMessage message;
+    message.calls = this->numberCalls;
+    memcpy(message.callName, this->callName.c_str(), this->callName.length());
+    WriteFile(
+        pipeHandle,
+        &message,
+        sizeof(CountUpdateMessage),
+        NULL,
+        NULL
+    );
 }

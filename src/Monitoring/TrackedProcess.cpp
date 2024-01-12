@@ -14,7 +14,7 @@ TrackedProcess::TrackedProcess(HANDLE processHandle, DWORD PID)
 	processRunning = true;
 	getProcessInfo();
 	//printProcessInfo();
-	int testPID = 996;
+	int testPID = 6124;
 	if (PID == testPID)
 	{
 		//Create named pipe for receiving API call totals
@@ -92,7 +92,7 @@ void TrackedProcess::attach()
 	
 	WaitForSingleObject(threadHandle, INFINITE);
 
-	ConnectNamedPipe(pipeHandle, NULL);
+	//ConnectNamedPipe(pipeHandle, NULL);
 	std::cout << "attached!\n";
 }
 

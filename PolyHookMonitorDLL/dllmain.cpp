@@ -69,6 +69,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
         break;
     case DLL_THREAD_DETACH:
     case DLL_PROCESS_DETACH:
+        //Unhook all API calls
         break;
     }
     return TRUE;

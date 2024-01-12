@@ -31,7 +31,7 @@ void hookKernel32APICalls(std::unordered_map<std::string, APICallCounter *> * ho
 DWORD __stdcall hookGetCurrentProcessId()
 {
     std::cout << "Called get id\n";
-
+    counterMap.at("GetCurrentProcessId")->incrementCall();
     return PLH::FnCast(trampolineGetCurrentProcessId, &GetCurrentProcessId)();
 }
 
@@ -39,6 +39,7 @@ DWORD __stdcall hookGetCurrentProcessId()
 HANDLE __stdcall hookOpenProcess(DWORD dwDesiredAccess, BOOL bInheritHandle, DWORD dwProcessId)
 {
     std::cout << "Called OpenProcess\n";
+    counterMap.at("OpenProcess")->incrementCall();
 
     return PLH::FnCast(trampolineOpenProcess, &OpenProcess)(dwDesiredAccess, bInheritHandle, dwDesiredAccess);
 }

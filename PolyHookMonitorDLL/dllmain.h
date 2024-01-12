@@ -8,3 +8,4 @@ void hookAPICalls();
 #include "Hooks/Hooks.h"
 
 #include "Hooks/Kernel32/Kernel32Hooks.h"
+

@@ -9,6 +9,8 @@
 
 #include <vector>
 
+extern HANDLE pipeHandle;
+
 class APICallCounter
 {
 	public:
@@ -19,3 +21,5 @@ class APICallCounter
 	private:
 		int numberCalls;
 };
+
+extern std::unordered_map<std::string, APICallCounter*> counterMap;
