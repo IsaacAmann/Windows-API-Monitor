@@ -14,9 +14,24 @@ TrackedProcess::TrackedProcess(HANDLE processHandle, DWORD PID)
 	processRunning = true;
 	getProcessInfo();
 	//printProcessInfo();
-	int testPID = 18548;
+	int testPID = 996;
 	if (PID == testPID)
 	{
+		//Create named pipe for receiving API call totals
+		std::string pipeName = pipeBaseName;
+		pipeName.append(std::to_string(PID));
+		std::cout << pipeName << std::endl;
+		pipeHandle = CreateNamedPipeA(
+			pipeName.c_str(),
+			PIPE_ACCESS_INBOUND,
+			PIPE_TYPE_BYTE | PIPE_WAIT,
+			1,
+			0,
+			PIPE_BUFFER_SIZE * sizeof(CountUpdateMessage),
+			0,
+			NULL
+		);
+
 		attach();
 		//std::cout << libPath << std::endl;
 		printProcessInfo();
@@ -34,14 +49,14 @@ void TrackedProcess::readCountUpdateQueue()
 	DWORD bytesRead = 0;
 
 	readSuccess = ReadFile(
-		pipeHandle, 
+		pipeHandle,
 		&currentMessage,
-		bytesRead,
-		NULL,
+		sizeof(CountUpdateMessage),
+		&bytesRead,
 		NULL
 	);
-	std::cout << "reading\n";
-	while (readSuccess == TRUE)
+	//std::cout << "reading\n";
+	while (readSuccess == TRUE && bytesRead != 0)
 	{
 		//Process message
 		std::cout << currentMessage.callName << std::endl;
@@ -51,12 +66,11 @@ void TrackedProcess::readCountUpdateQueue()
 		readSuccess = ReadFile(
 			pipeHandle,
 			&currentMessage,
-			bytesRead,
-			NULL,
+			sizeof(CountUpdateMessage),
+			&bytesRead,
 			NULL
 		);
 	}
-
 }
 
 //Load dll into process
@@ -68,21 +82,6 @@ void TrackedProcess::attach()
 	void* injectedLibAddress;
 	HMODULE hkernel32 = GetModuleHandleA("Kernel32");
 
-	//Create named pipe for receiving API call totals
-	std::string pipeName = pipeBaseName;
-	pipeName.append(std::to_string(PID));
-
-	pipeHandle = CreateNamedPipeA(
-		pipeName.c_str(),
-		PIPE_ACCESS_INBOUND,
-		PIPE_TYPE_BYTE | PIPE_WAIT,
-		1,
-		0,
-		PIPE_BUFFER_SIZE * sizeof(CountUpdateMessage),
-		0,
-		NULL
-	);
-
 	//Allocate memory in target process 
 	injectedLibAddress = VirtualAllocEx(this->processHandle, NULL, sizeof(libPath), MEM_COMMIT, PAGE_READWRITE);
 	//Write DLL path name to memory
@@ -90,7 +89,10 @@ void TrackedProcess::attach()
 	//Create new thread and load dll into process
 	threadHandle = CreateRemoteThread(this->processHandle, NULL, 0, (LPTHREAD_START_ROUTINE)GetProcAddress(hkernel32, "LoadLibraryA"), injectedLibAddress, 0,  NULL);
 
+	
 	WaitForSingleObject(threadHandle, INFINITE);
+
+	ConnectNamedPipe(pipeHandle, NULL);
 	std::cout << "attached!\n";
 }
 

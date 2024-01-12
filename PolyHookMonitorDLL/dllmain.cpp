@@ -22,21 +22,28 @@ BOOL APIENTRY DllMain( HMODULE hModule,
         //Connect to named pipe
         std::string pipeName = pipeBaseName;
         pipeName.append(std::to_string(GetCurrentProcessId()));
+        std::cout << pipeName << std::endl;
         std::wstring temp = std::wstring(pipeName.begin(), pipeName.end());
-        LPCWSTR string = temp.c_str();
-        pipeHandle = CreateFile(
-            string,
-            GENERIC_WRITE,
-            0,
-            NULL,
-            OPEN_EXISTING,
-            0,
-            NULL
-        );
+        LPCWSTR fullString = temp.c_str();
+        printf("%ls\n", fullString);
+        do
+        {
+            pipeHandle = CreateFile(
+                fullString,
+                GENERIC_WRITE,
+                0,
+                NULL,
+                OPEN_EXISTING,
+                0,
+                NULL
+            );
+            std::cout << "trying to connect" << std::endl;
+        } while (pipeHandle == INVALID_HANDLE_VALUE);
         CountUpdateMessage test;
         char testString[60] = "test";
         memcpy(test.callName, testString, 60);
         test.calls = 4;
+
         WriteFile(
             pipeHandle,
             &test,
@@ -46,6 +53,15 @@ BOOL APIENTRY DllMain( HMODULE hModule,
         );
         //Hook API calls
         hookAPICalls();
+        DWORD written;
+        WriteFile(
+            pipeHandle,
+            &test,
+            sizeof(CountUpdateMessage),
+            &written,
+            NULL
+        );
+        std::cout << "written: " << written << std::endl;
     }
         break;
     case DLL_THREAD_ATTACH:
