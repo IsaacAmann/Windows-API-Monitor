@@ -15,8 +15,8 @@ TrackedProcess::TrackedProcess(HANDLE processHandle, DWORD PID)
 	getProcessInfo();
 	//printProcessInfo();
 	int testPID = 17356;
-	if (PID == testPID)
-	{
+	//if (PID == testPID)
+	//{
 		//Create named pipe for receiving API call totals
 		std::string pipeName = pipeBaseName;
 		pipeName.append(std::to_string(PID));
@@ -35,12 +35,12 @@ TrackedProcess::TrackedProcess(HANDLE processHandle, DWORD PID)
 		attach();
 		//std::cout << libPath << std::endl;
 		//printProcessInfo();
-	}
+	//}
 	
-	while (PID == testPID)
-	{
+	//while (PID == testPID)
+	//{
 		readCountUpdateQueue();
-	}
+	//}
 	
 }
 
@@ -61,8 +61,9 @@ void TrackedProcess::readCountUpdateQueue()
 	while (readSuccess == TRUE && bytesRead != 0)
 	{
 		//Process message
-		std::cout << currentMessage.callName << std::endl;
-		std::cout << currentMessage.calls << std::endl;
+		std::cout << "PID: " << PID << std::endl;
+		std::cout << "\tAPI Call: " << currentMessage.callName << std::endl;
+		std::cout << "\tTotal Calls: " << currentMessage.calls << std::endl;
 
 		//Get next message in queue
 		readSuccess = ReadFile(
@@ -91,8 +92,8 @@ void TrackedProcess::attach()
 	//Create new thread and load dll into process
 	threadHandle = CreateRemoteThread(this->processHandle, NULL, 0, (LPTHREAD_START_ROUTINE)GetProcAddress(hkernel32, "LoadLibraryA"), injectedLibAddress, 0,  NULL);
 
-	
-	WaitForSingleObject(threadHandle, 5000);
+	//Probably don't need to wait
+	//WaitForSingleObject(threadHandle, 1000);
 
 	//ConnectNamedPipe(pipeHandle, NULL);
 	std::cout << "attached!\n";

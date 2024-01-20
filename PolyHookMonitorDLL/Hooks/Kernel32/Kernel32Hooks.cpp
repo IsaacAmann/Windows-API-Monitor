@@ -64,6 +64,6 @@ DWORD WINAPI hookGetCurrentProcessId()
 {
     std::cout << "Called get id\n";
     counterMap.at("GetCurrentProcessId")->incrementCall();
-//    DWORD returnValue = origGetCurrentProcessId();
+
     return origGetCurrentProcessId();
 }

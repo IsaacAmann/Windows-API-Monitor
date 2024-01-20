@@ -28,7 +28,7 @@ void managerThreadExecute(ProcessMonitor* monitor)
 		monitor->scanForProcesses();
 		for (auto iterator : monitor->processList)
 		{
-			std::cout << "reading" << iterator.second->PID << std::endl;
+			//std::cout << "reading" << iterator.second->PID << std::endl;
 			iterator.second->readCountUpdateQueue();
 		}
 	}
@@ -43,7 +43,7 @@ void ProcessMonitor::scanForProcesses()
 
 	numberProcess = needed / sizeof(DWORD);
 
-	std::cout << "Processes running: " << numberProcess << std::endl;
+	//std::cout << "Processes running: " << numberProcess << std::endl;
 
 	for (int i = 0; i < numberProcess; i++)
 	{
@@ -52,7 +52,7 @@ void ProcessMonitor::scanForProcesses()
 		HMODULE mod;
 		DWORD cbNeeded;
 		//HANDLE process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processes[i]);
-		std::cout << GetLastError() << std::endl;
+		//std::cout << GetLastError() << std::endl;
 
 		TrackedProcess* currentTrackedProcess;
 		//Look up process by PID on processList hashmap
