@@ -8,15 +8,31 @@ ProcessMonitor::~ProcessMonitor()
 
 bool ProcessMonitor::initialize()
 {
+	isRunning = true;
 	//Create thread for managing tracked processes
 	managerThread = new std::thread(managerThreadExecute, this);
 	return true;
 }
 
+void ProcessMonitor::stop()
+{
+	isRunning = false;
+
+}
+
 void managerThreadExecute(ProcessMonitor* monitor)
 {
 	std::cout << "Manager Thread Running " << monitor->number << std::endl;
-	monitor->scanForProcesses();
+	while (monitor->isRunning)
+	{
+		monitor->scanForProcesses();
+		for (auto iterator : monitor->processList)
+		{
+			std::cout << "reading" << iterator.second->PID << std::endl;
+			iterator.second->readCountUpdateQueue();
+		}
+	}
+	
 }
 
 void ProcessMonitor::scanForProcesses()
@@ -36,7 +52,6 @@ void ProcessMonitor::scanForProcesses()
 		HMODULE mod;
 		DWORD cbNeeded;
 		//HANDLE process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processes[i]);
-		HANDLE process = OpenProcess(PROCESS_ALL_ACCESS, FALSE, processes[i]);
 		std::cout << GetLastError() << std::endl;
 
 		TrackedProcess* currentTrackedProcess;
@@ -71,6 +86,7 @@ void ProcessMonitor::scanForProcesses()
 		{
 			//new Process and no collision with old PID
 			//Create TrackedProcess object
+			HANDLE process = OpenProcess(PROCESS_ALL_ACCESS, FALSE, processes[i]);
 			currentTrackedProcess = new TrackedProcess(process, processes[i]);
 			//currentTrackedProcess->printProcessInfo();
 			//Add to hashmap

@@ -21,11 +21,14 @@ class ProcessMonitor
 
 		void printProcessList();
 
+		void stop();
 
 		std::thread* managerThread;
 		int number;
-	private:
+		bool isRunning;
 		std::unordered_map<DWORD, TrackedProcess*> processList;
+		
+	
 };
 
 void managerThreadExecute(ProcessMonitor* monitor);

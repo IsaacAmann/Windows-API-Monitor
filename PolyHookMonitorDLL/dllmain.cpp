@@ -2,8 +2,9 @@
 #include "framework.h"
 #include "dllmain.h"
 
-
-std::vector<PLH::NatDetour*> hooks;
+//Switching to Iat hook
+//std::vector<PLH::NatDetour*> hooks;
+//std::vector<PLH::IatHook*> hooks;
 std::unordered_map<std::string, APICallCounter *> counterMap;
 std::string pipeBaseName = "\\\\.\\pipe\\APIMonitor";
 
@@ -52,7 +53,12 @@ BOOL APIENTRY DllMain( HMODULE hModule,
             NULL
         );
         //Hook API calls
+        //Some programs seem to hang when being injected
+        //Possibly run this in seperate thread with a time out to see if this is where it is hanging
         hookAPICalls();
+        //std::thread hookThread = std::thread(hookAPICalls);
+        //HANDLE hookThread = CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)hookAPICalls, NULL, 0, NULL);
+       // WaitForSingleObject(hookThread, 3000);
         DWORD written;
         WriteFile(
             pipeHandle,

@@ -2,8 +2,9 @@
 
 void hookAPICalls();
 
-#include "../include/polyhook2/IHook.hpp"
-#include "../include/polyhook2/Detour/NatDetour.hpp"
+//#include "../include/polyhook2/IHook.hpp"
+//#include "../include/polyhook2/Detour/NatDetour.hpp"
+//#include "../include/polyhook2/PE/IatHook.hpp"
 
 #include "Hooks/Hooks.h"
 

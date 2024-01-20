@@ -14,7 +14,7 @@ TrackedProcess::TrackedProcess(HANDLE processHandle, DWORD PID)
 	processRunning = true;
 	getProcessInfo();
 	//printProcessInfo();
-	int testPID = 6124;
+	int testPID = 17356;
 	if (PID == testPID)
 	{
 		//Create named pipe for receiving API call totals
@@ -24,7 +24,7 @@ TrackedProcess::TrackedProcess(HANDLE processHandle, DWORD PID)
 		pipeHandle = CreateNamedPipeA(
 			pipeName.c_str(),
 			PIPE_ACCESS_INBOUND,
-			PIPE_TYPE_BYTE | PIPE_WAIT,
+			PIPE_TYPE_BYTE | PIPE_NOWAIT,
 			1,
 			0,
 			PIPE_BUFFER_SIZE * sizeof(CountUpdateMessage),
@@ -34,12 +34,14 @@ TrackedProcess::TrackedProcess(HANDLE processHandle, DWORD PID)
 
 		attach();
 		//std::cout << libPath << std::endl;
-		printProcessInfo();
+		//printProcessInfo();
 	}
+	
 	while (PID == testPID)
 	{
 		readCountUpdateQueue();
 	}
+	
 }
 
 void TrackedProcess::readCountUpdateQueue()
@@ -90,7 +92,7 @@ void TrackedProcess::attach()
 	threadHandle = CreateRemoteThread(this->processHandle, NULL, 0, (LPTHREAD_START_ROUTINE)GetProcAddress(hkernel32, "LoadLibraryA"), injectedLibAddress, 0,  NULL);
 
 	
-	WaitForSingleObject(threadHandle, INFINITE);
+	WaitForSingleObject(threadHandle, 5000);
 
 	//ConnectNamedPipe(pipeHandle, NULL);
 	std::cout << "attached!\n";
