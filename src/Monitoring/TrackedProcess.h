@@ -24,7 +24,7 @@ class TrackedProcess
 {
 	public:
 		TrackedProcess(HANDLE processHandle, DWORD PID);
-		
+		~TrackedProcess();
 		std::unordered_map<std::string, CountUpdateMessage> callCounters;
 		bool processRunning;
 		TCHAR processName[MAX_PATH];
@@ -36,11 +36,12 @@ class TrackedProcess
 		void readCountUpdateQueue();
 		void attach();
 		void detach();
+		//Update fields including processRunning
+		void getProcessUpdate();
 
 	private:
 		//Get process info on startup
 		void getProcessInfo();
-		//Update fields including processRunning
-		void getProcessUpdate();
+		
 
 };

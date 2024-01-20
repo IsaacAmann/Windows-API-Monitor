@@ -23,14 +23,36 @@ void ProcessMonitor::stop()
 void managerThreadExecute(ProcessMonitor* monitor)
 {
 	std::cout << "Manager Thread Running " << monitor->number << std::endl;
+	std::vector<DWORD> pidRemoveList;
+
 	while (monitor->isRunning)
 	{
 		monitor->scanForProcesses();
 		for (auto iterator : monitor->processList)
 		{
+			TrackedProcess* currentProcess = iterator.second;
 			//std::cout << "reading" << iterator.second->PID << std::endl;
-			iterator.second->readCountUpdateQueue();
+			currentProcess->readCountUpdateQueue();
+			currentProcess->getProcessUpdate();
+			//Check for process exit (need to send datapoint and delete object if exit)
+			if(currentProcess->processRunning == false)
+			{
+				pidRemoveList.push_back(currentProcess->PID);
+			}
 		}
+		//Remove processes that have exited
+		for (int i = 0; i < pidRemoveList.size(); i++)
+		{
+			TrackedProcess* currentProcess = monitor->processList.at(pidRemoveList[i]);
+			//Remove from process list
+			monitor->processList.erase(currentProcess->PID);
+			//Create datapoint from process and offload to server
+
+			//Free object
+			delete currentProcess;
+		}
+		//Clear remove list
+		pidRemoveList.clear();
 	}
 	
 }

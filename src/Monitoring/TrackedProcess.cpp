@@ -44,6 +44,12 @@ TrackedProcess::TrackedProcess(HANDLE processHandle, DWORD PID)
 	
 }
 
+TrackedProcess::~TrackedProcess()
+{
+	//Close process Handle
+	CloseHandle(processHandle);
+}
+
 void TrackedProcess::readCountUpdateQueue()
 {
 	BOOL readSuccess = FALSE;
@@ -146,6 +152,7 @@ void TrackedProcess::getProcessUpdate()
 		else
 		{
 			processRunning = false;
+			std::cout << PID << " Has exited \n";
 		}
 	}
 }
