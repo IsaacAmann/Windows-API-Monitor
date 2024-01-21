@@ -1,6 +1,10 @@
+#pragma once
+
+#include <windows.h>
+#include <curl/curl.h>
+
 #include <iostream>
 #include <vector>
-#include <windows.h>
 #include <Psapi.h>
 #include <tchar.h>
 #include <process.h>
@@ -9,6 +13,9 @@
 #include <mutex>
 #include <unordered_map>
 #include "TrackedProcess.h"
+
+
+
 
 
 class ProcessMonitor
