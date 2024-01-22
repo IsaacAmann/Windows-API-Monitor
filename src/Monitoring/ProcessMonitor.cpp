@@ -2,6 +2,7 @@
 
 using json = nlohmann::json;
 
+extern std::string clientId;
 extern std::string apiKey;
 extern std::string API_ENDPOINT;
 
@@ -68,31 +69,41 @@ void sendDataPoint(TrackedProcess* process)
 	CURLcode response;
 
 	std::string url = API_ENDPOINT + "/test";
-
+	std::cout << "url: " << url <<std::endl ;
 	curl = curl_easy_init();
 
 	struct curl_slist* headers = NULL;
 	headers = curl_slist_append(headers, "Accept: application/json");
 	headers = curl_slist_append(headers, "Content-Type: application/json");
 	headers = curl_slist_append(headers, "charset: utf-8");
-
 	if (curl)
 	{
 		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
 		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 		curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcrp/0.1");
-		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, -1L);
-		//char *json = "{\"username\": \"test\", \"email\":\"isaacmnn@gmail.com\", \"password\":\"longpassword\"}";
-		//char* json = (char*)malloc(200);
-		//sprintf(json, "{}");
+		
+		std::cout << "Posting datapoint \n";
+
+
 		json payload;
 
+		//Set clientId and apiKey for json
+		payload["clientId"] = clientId;
 		payload["token"] = apiKey;
 
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.dump());
+		//Add each Win32 API call count to json
+		for (auto iterator : process->callCounters)
+		{
+			CountUpdateMessage currentCounter =  iterator.second;
+			
+			payload["WinAPICounts"][currentCounter.callName] = currentCounter.calls;
+		}
+		std::cout << payload.dump() << std::endl;
+		curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, payload.dump().c_str());
 
 		response = curl_easy_perform(curl);
 	}

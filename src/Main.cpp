@@ -6,11 +6,11 @@ void testHTTPRequest();
 ProcessMonitor* monitor;
 int main()
 {
-	API_ENDPOINT = "http://192.168.0.19:8080";
-	//testHTTPRequest();
+	API_ENDPOINT = "http://localhost:8080";
+	testHTTPRequest();
 	//Get API key
 	apiKey = "testKey";
-
+	clientId = "testClientId";
 	//Verify key with server
 
 	//Start monitoring
@@ -42,7 +42,7 @@ void testHTTPRequest()
 		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
 		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 		curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcrp/0.1");
-		curl_easy_setopt(curl, CURLOPT_URL, "http://192.168.0.19:8080/test");
+		curl_easy_setopt(curl, CURLOPT_URL, "http://localhost:8080/test");
 		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, -1L);
