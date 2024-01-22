@@ -6,7 +6,14 @@ void testHTTPRequest();
 ProcessMonitor* monitor;
 int main()
 {
-	testHTTPRequest();
+	API_ENDPOINT = "http://192.168.0.19:8080";
+	//testHTTPRequest();
+	//Get API key
+	apiKey = "testKey";
+
+	//Verify key with server
+
+	//Start monitoring
 	monitor = new(ProcessMonitor);
 	//monitor.scanForProcesses();
 	monitor->initialize();

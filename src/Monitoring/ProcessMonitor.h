@@ -12,6 +12,7 @@
 #include <thread>
 #include <mutex>
 #include <unordered_map>
+#include <json.hpp>
 #include "TrackedProcess.h"
 
 
@@ -39,5 +40,7 @@ class ProcessMonitor
 };
 
 void managerThreadExecute(ProcessMonitor* monitor);
+
+void sendDataPoint(TrackedProcess* process);
 
 

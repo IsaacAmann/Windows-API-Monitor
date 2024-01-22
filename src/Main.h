@@ -8,4 +8,5 @@
 #include <tchar.h>
 #include "Monitoring/ProcessMonitor.h"
 
-
+std::string apiKey;
+std::string API_ENDPOINT;

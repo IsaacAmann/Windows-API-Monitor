@@ -1,5 +1,10 @@
 #include "ProcessMonitor.h"
 
+using json = nlohmann::json;
+
+extern std::string apiKey;
+extern std::string API_ENDPOINT;
+
 ProcessMonitor::~ProcessMonitor()
 {
 	delete managerThread;
@@ -46,8 +51,8 @@ void managerThreadExecute(ProcessMonitor* monitor)
 			TrackedProcess* currentProcess = monitor->processList.at(pidRemoveList[i]);
 			//Remove from process list
 			monitor->processList.erase(currentProcess->PID);
-			//Create datapoint from process and offload to server
-
+			//Make HTTP request to server 
+			sendDataPoint(currentProcess);
 			//Free object
 			delete currentProcess;
 		}
@@ -55,6 +60,42 @@ void managerThreadExecute(ProcessMonitor* monitor)
 		pidRemoveList.clear();
 	}
 	
+}
+
+void sendDataPoint(TrackedProcess* process)
+{
+	CURL* curl;
+	CURLcode response;
+
+	std::string url = API_ENDPOINT + "/test";
+
+	curl = curl_easy_init();
+
+	struct curl_slist* headers = NULL;
+	headers = curl_slist_append(headers, "Accept: application/json");
+	headers = curl_slist_append(headers, "Content-Type: application/json");
+	headers = curl_slist_append(headers, "charset: utf-8");
+
+	if (curl)
+	{
+		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+		curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcrp/0.1");
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, -1L);
+		//char *json = "{\"username\": \"test\", \"email\":\"isaacmnn@gmail.com\", \"password\":\"longpassword\"}";
+		//char* json = (char*)malloc(200);
+		//sprintf(json, "{}");
+		json payload;
+
+		payload["token"] = apiKey;
+
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.dump());
+
+		response = curl_easy_perform(curl);
+	}
 }
 
 void ProcessMonitor::scanForProcesses()
