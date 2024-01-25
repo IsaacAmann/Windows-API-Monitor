@@ -15,33 +15,27 @@ TrackedProcess::TrackedProcess(HANDLE processHandle, DWORD PID)
 	getProcessInfo();
 	//printProcessInfo();
 	int testPID = 17356;
-	//if (PID == testPID)
-	//{
-		//Create named pipe for receiving API call totals
-		std::string pipeName = pipeBaseName;
-		pipeName.append(std::to_string(PID));
-		std::cout << pipeName << std::endl;
-		pipeHandle = CreateNamedPipeA(
-			pipeName.c_str(),
-			PIPE_ACCESS_INBOUND,
-			PIPE_TYPE_BYTE | PIPE_NOWAIT,
-			1,
-			0,
-			PIPE_BUFFER_SIZE * sizeof(CountUpdateMessage),
-			0,
-			NULL
-		);
 
-		attach();
-		//std::cout << libPath << std::endl;
-		//printProcessInfo();
-	//}
-	
-	//while (PID == testPID)
-	//{
-		readCountUpdateQueue();
-	//}
-	
+	//Create named pipe for receiving API call totals
+	std::string pipeName = pipeBaseName;
+	pipeName.append(std::to_string(PID));
+	std::cout << pipeName << std::endl;
+	pipeHandle = CreateNamedPipeA(
+		pipeName.c_str(),
+		PIPE_ACCESS_INBOUND,
+		PIPE_TYPE_BYTE | PIPE_NOWAIT,
+		1,
+		0,
+		PIPE_BUFFER_SIZE * sizeof(CountUpdateMessage),
+		0,
+		NULL
+	);
+
+	attach();
+	//std::cout << libPath << std::endl;
+	//printProcessInfo();
+	readCountUpdateQueue();
+
 }
 
 TrackedProcess::~TrackedProcess()

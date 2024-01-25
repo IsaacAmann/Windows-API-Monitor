@@ -6,6 +6,9 @@ extern std::string clientId;
 extern std::string apiKey;
 extern std::string API_ENDPOINT;
 
+const bool USE_TEST_PID = true;
+const int TEST_PID = 2916;
+
 ProcessMonitor::~ProcessMonitor()
 {
 	delete managerThread;
@@ -121,6 +124,11 @@ void ProcessMonitor::scanForProcesses()
 
 	for (int i = 0; i < numberProcess; i++)
 	{
+
+		//Check for debugging targeting only one process (skip if not target PID)
+		if (USE_TEST_PID && TEST_PID != processes[i])
+			continue;
+
 		TCHAR currentName[MAX_PATH] = TEXT("Blank");
 		TCHAR currentFileName[MAX_PATH] = TEXT("Blank");
 		HMODULE mod;
