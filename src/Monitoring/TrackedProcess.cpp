@@ -64,6 +64,19 @@ void TrackedProcess::readCountUpdateQueue()
 		std::cout << "PID: " << PID << std::endl;
 		std::cout << "\tAPI Call: " << currentMessage.callName << std::endl;
 		std::cout << "\tTotal Calls: " << currentMessage.calls << std::endl;
+		//Update count
+		//Check for existing counter
+		auto iterator = callCounters.find(currentMessage.callName);
+		if (iterator == callCounters.end())
+		{
+			//First call to this API call, need to create counter
+			callCounters.insert(std::make_pair(currentMessage.callName, currentMessage));
+		}
+		else
+		{
+			//Counter exists, update it
+			callCounters.at(currentMessage.callName).calls = currentMessage.calls;
+		}
 
 		//Get next message in queue
 		readSuccess = ReadFile(

@@ -7,7 +7,7 @@ extern std::string apiKey;
 extern std::string API_ENDPOINT;
 
 const bool USE_TEST_PID = true;
-const int TEST_PID = 2916;
+const int TEST_PID = 15852;
 
 ProcessMonitor::~ProcessMonitor()
 {
@@ -104,6 +104,7 @@ void sendDataPoint(TrackedProcess* process)
 			CountUpdateMessage currentCounter =  iterator.second;
 			
 			payload["WinAPICounts"][currentCounter.callName] = currentCounter.calls;
+			std::cout << "Adding call counter" << std::endl;
 		}
 		std::cout << payload.dump() << std::endl;
 		curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, payload.dump().c_str());

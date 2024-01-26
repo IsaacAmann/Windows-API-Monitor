@@ -40,6 +40,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
             );
             std::cout << "trying to connect" << std::endl;
         } while (pipeHandle == INVALID_HANDLE_VALUE);
+        /*
         CountUpdateMessage test;
         char testString[60] = "test";
         memcpy(test.callName, testString, 60);
@@ -52,6 +53,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
             NULL,
             NULL
         );
+        */
         //Hook API calls
         //Some programs seem to hang when being injected
         //Possibly run this in seperate thread with a time out to see if this is where it is hanging
@@ -59,15 +61,6 @@ BOOL APIENTRY DllMain( HMODULE hModule,
         //std::thread hookThread = std::thread(hookAPICalls);
         //HANDLE hookThread = CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)hookAPICalls, NULL, 0, NULL);
        // WaitForSingleObject(hookThread, 3000);
-        DWORD written;
-        WriteFile(
-            pipeHandle,
-            &test,
-            sizeof(CountUpdateMessage),
-            &written,
-            NULL
-        );
-        std::cout << "written: " << written << std::endl;
     }
         break;
     case DLL_THREAD_ATTACH:
