@@ -40,6 +40,7 @@ APICallCounter::APICallCounter(std::string callName, std::unordered_map<std::str
 void APICallCounter::incrementCall()
 {
 	numberCalls++;
+	/*
 	//send message
     CountUpdateMessage message;
     message.calls = this->numberCalls;
@@ -48,6 +49,8 @@ void APICallCounter::incrementCall()
 	message.callName[this->callName.length()] = '\0';
 	//Need to change how this is handled, WriteFile blocks and programs spend too much time writing
 	//and some will freeze up
+	//Possibly create a thread that manages sending the messages, code running on the calling thread 
+	//Should be minimum
     WriteFile(
         pipeHandle,
         &message,
@@ -55,4 +58,5 @@ void APICallCounter::incrementCall()
         NULL,
         NULL
     );
+	*/
 }

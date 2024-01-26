@@ -2,6 +2,8 @@
 #include "framework.h"
 #include "dllmain.h"
 
+const DWORD MESSENGER_SLEEP_TIME = 10000;
+
 //Switching to Iat hook
 //std::vector<PLH::NatDetour*> hooks;
 //std::vector<PLH::IatHook*> hooks;
@@ -9,6 +11,7 @@ std::unordered_map<std::string, APICallCounter *> counterMap;
 std::string pipeBaseName = "\\\\.\\pipe\\APIMonitor";
 
 HANDLE pipeHandle; 
+HANDLE messengerThread;
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
@@ -40,27 +43,12 @@ BOOL APIENTRY DllMain( HMODULE hModule,
             );
             std::cout << "trying to connect" << std::endl;
         } while (pipeHandle == INVALID_HANDLE_VALUE);
-        /*
-        CountUpdateMessage test;
-        char testString[60] = "test";
-        memcpy(test.callName, testString, 60);
-        test.calls = 4;
-
-        WriteFile(
-            pipeHandle,
-            &test,
-            sizeof(CountUpdateMessage),
-            NULL,
-            NULL
-        );
-        */
+  
         //Hook API calls
-        //Some programs seem to hang when being injected
-        //Possibly run this in seperate thread with a time out to see if this is where it is hanging
         hookAPICalls();
-        //std::thread hookThread = std::thread(hookAPICalls);
-        //HANDLE hookThread = CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)hookAPICalls, NULL, 0, NULL);
-       // WaitForSingleObject(hookThread, 3000);
+       
+        //Start messenger thread
+        messengerThread = CreateThread(NULL, 0, MessengerThreadExecute, NULL, 0, NULL);
     }
         break;
     case DLL_THREAD_ATTACH:
@@ -81,4 +69,53 @@ void hookAPICalls()
 
 }
 
+DWORD WINAPI MessengerThreadExecute(LPVOID lpParam)
+{
+    while (true)
+    {
+        //Send update for all counters to monitor
+        for (auto iterator : counterMap)
+        {
+            APICallCounter* currentCounter = iterator.second;
+            //Create message
+            CountUpdateMessage message;
+            message.calls = currentCounter->numberCalls;
+            //Copy API call name
+            memcpy(message.callName, currentCounter->callName.c_str(), currentCounter->callName.length());
+            //Add null byte to the end
+            message.callName[currentCounter->callName.length()] = '\0';
 
+            //Send messenge over named pipe
+            WriteFile(
+                pipeHandle,
+                &message,
+                sizeof(CountUpdateMessage),
+                NULL,
+                NULL
+            );
+        }
+
+        //Wait before sending again
+        Sleep(MESSENGER_SLEEP_TIME);
+    }
+}
+
+/*
+//send message
+CountUpdateMessage message;
+message.calls = this->numberCalls;
+memcpy(message.callName, this->callName.c_str(), this->callName.length());
+//add null byte to the end of call name
+message.callName[this->callName.length()] = '\0';
+//Need to change how this is handled, WriteFile blocks and programs spend too much time writing
+//and some will freeze up
+//Possibly create a thread that manages sending the messages, code running on the calling thread 
+//Should be minimum
+WriteFile(
+    pipeHandle,
+    &message,
+    sizeof(CountUpdateMessage),
+    NULL,
+    NULL
+);
+*/

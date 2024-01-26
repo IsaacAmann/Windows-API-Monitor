@@ -41,6 +41,7 @@ void hookKernel32APICalls(std::unordered_map<std::string, APICallCounter *> * ho
 
 
     //Hooking using Microsoft Detours library
+    DetourTransactionBegin();
     currentCounter = new APICallCounter("GetCurrentProcessId", hooks);
     DetourRestoreAfterWith();
     DetourAttach(&origGetCurrentProcessId, hookGetCurrentProcessId);

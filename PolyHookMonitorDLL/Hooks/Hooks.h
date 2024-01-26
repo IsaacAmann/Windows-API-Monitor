@@ -41,7 +41,6 @@ class APICallCounter
 		
 		std::string callName;
 		void incrementCall();
-	private:
 		int numberCalls;
 };
 

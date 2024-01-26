@@ -10,3 +10,5 @@ void hookAPICalls();
 
 #include "Hooks/Kernel32/Kernel32Hooks.h"
 
+
+DWORD WINAPI MessengerThreadExecute(LPVOID lpParam);
