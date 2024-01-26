@@ -1,6 +1,6 @@
 #include "TrackedProcess.h"
 
-const int PIPE_BUFFER_SIZE = 100;
+const int PIPE_BUFFER_SIZE = 1000;
 
 //Base name for named pipe, should be appended with PID for the process
 //That will be sending data on the pipe

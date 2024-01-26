@@ -46,6 +46,8 @@ void APICallCounter::incrementCall()
     memcpy(message.callName, this->callName.c_str(), this->callName.length());
 	//add null byte to the end of call name
 	message.callName[this->callName.length()] = '\0';
+	//Need to change how this is handled, WriteFile blocks and programs spend too much time writing
+	//and some will freeze up
     WriteFile(
         pipeHandle,
         &message,
