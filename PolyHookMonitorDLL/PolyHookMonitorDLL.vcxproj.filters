@@ -33,6 +33,9 @@
     <ClInclude Include="Hooks\wsock32\wsock32Hooks.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Hooks\wininet\wininetHooks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -48,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hooks\wsock32\wsock32Hooks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hooks\wininet\wininetHooks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

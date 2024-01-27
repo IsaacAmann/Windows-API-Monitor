@@ -17,3 +17,7 @@ SOCKET WSAAPI hookaccept(SOCKET s, sockaddr* addr, int* addrlen);
 int WSAAPI hookconnect(SOCKET s, const sockaddr* name, int namelen);
 
 int WSAAPI hooksend(SOCKET s, const char* buf, int len, int flags);
+
+int __stdcall hookrecv(SOCKET s, char *buf, int len, int flags);
+
+int __stdcall hookgethostname(char* name, int namelen);

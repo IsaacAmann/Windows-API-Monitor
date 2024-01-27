@@ -10,6 +10,8 @@ int(WSAAPI* origlisten)(SOCKET s, int backlog) = listen;
 SOCKET(WSAAPI* origaccept)(SOCKET s, sockaddr* addr, int* addrlen) = accept;
 int(WSAAPI* origconnect)(SOCKET s, const sockaddr* name, int namelen) = connect;
 int(WSAAPI* origsend)(SOCKET s, const char* buf, int len, int flags) = send;
+int(__stdcall* origrecv)(SOCKET s, char* buf, int len, int flags) = recv;
+int(__stdcall* origgethostname)(char* name, int namelen) = gethostname;
 
 void hookwinsock32APICalls(std::unordered_map<std::string, APICallCounter*>* hooks)
 {
@@ -37,6 +39,14 @@ void hookwinsock32APICalls(std::unordered_map<std::string, APICallCounter*>* hoo
 
     currentCounter = new APICallCounter("send", hooks);
     DetourAttach(&origsend, hooksend);
+
+    currentCounter = new APICallCounter("recv", hooks);
+    DetourAttach(&origrecv, hookrecv);
+
+    currentCounter = new APICallCounter("gethostname", hooks);
+    DetourAttach(&origgethostname, hookgethostname);
+
+
 
     DetourTransactionCommit();
 }
@@ -93,4 +103,22 @@ int WSAAPI hooksend(SOCKET s, const char* buf, int len, int flags)
     counterMap.at("send")->incrementCall();
 
     return origsend(s, buf, len, flags);
+}
+
+int __stdcall hookrecv(SOCKET s, char* buf, int len, int flags) 
+{
+    if (PRINT_CALLS)
+        std::cout << "Called recv\n";
+    counterMap.at("recv")->incrementCall();
+
+    return origrecv(s, buf, len, flags);
+}
+
+int __stdcall hookgethostname(char* name, int namelen)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called gethostname\n";
+    counterMap.at("gethostname")->incrementCall();
+
+    return origgethostname(name, namelen);
 }
