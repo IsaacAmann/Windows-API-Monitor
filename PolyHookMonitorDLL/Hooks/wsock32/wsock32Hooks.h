@@ -8,3 +8,12 @@ void hookwinsock32APICalls(std::unordered_map<std::string, APICallCounter*>* hoo
 
 SOCKET WSAAPI hooksocket(int af, int type, int protocol);
 
+int WSAAPI hookbind(SOCKET s, const sockaddr* name, int namelen);
+
+int WSAAPI hooklisten(SOCKET s, int backlog);
+
+SOCKET WSAAPI hookaccept(SOCKET s, sockaddr* addr, int* addrlen);
+
+int WSAAPI hookconnect(SOCKET s, const sockaddr* name, int namelen);
+
+int WSAAPI hooksend(SOCKET s, const char* buf, int len, int flags);
