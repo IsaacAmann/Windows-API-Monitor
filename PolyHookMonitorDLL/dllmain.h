@@ -9,6 +9,7 @@ void hookAPICalls();
 #include "Hooks/Hooks.h"
 
 #include "Hooks/Kernel32/Kernel32Hooks.h"
+#include "Hooks/wsock32/wsock32Hooks.h"
 
 
 DWORD WINAPI MessengerThreadExecute(LPVOID lpParam);

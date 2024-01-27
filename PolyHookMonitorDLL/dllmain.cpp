@@ -66,7 +66,7 @@ void hookAPICalls()
 {
     //Hook Kernel32.dll functions
     hookKernel32APICalls(&counterMap);
-
+    hookwinsock32APICalls(&counterMap);
 }
 
 DWORD WINAPI MessengerThreadExecute(LPVOID lpParam)
@@ -99,23 +99,3 @@ DWORD WINAPI MessengerThreadExecute(LPVOID lpParam)
         Sleep(MESSENGER_SLEEP_TIME);
     }
 }
-
-/*
-//send message
-CountUpdateMessage message;
-message.calls = this->numberCalls;
-memcpy(message.callName, this->callName.c_str(), this->callName.length());
-//add null byte to the end of call name
-message.callName[this->callName.length()] = '\0';
-//Need to change how this is handled, WriteFile blocks and programs spend too much time writing
-//and some will freeze up
-//Possibly create a thread that manages sending the messages, code running on the calling thread 
-//Should be minimum
-WriteFile(
-    pipeHandle,
-    &message,
-    sizeof(CountUpdateMessage),
-    NULL,
-    NULL
-);
-*/
