@@ -16,6 +16,13 @@ BOOL(WINAPI * origWriteFileEx)(HANDLE hFile, LPCVOID lpBuffer, DWORD nNumberOfBy
 HANDLE(WINAPI * origCreateFileA)(LPCSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile) = CreateFileA;
 HANDLE(WINAPI * origCreateFileW)(LPCWSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile) = CreateFileW;
 
+HANDLE(WINAPI* origCreateFileMappingA)(HANDLE hFile, LPSECURITY_ATTRIBUTES lpFileMappingAttributes, DWORD flProtect, DWORD dwMaximumSizeHigh, DWORD dwMaximumSizeLow, LPCSTR lpName) = CreateFileMappingA;
+
+UINT(WINAPI* origGetWindowsDirectoryA)(LPSTR lpBuffer, UINT uSize) = GetWindowsDirectoryA;
+UINT(WINAPI* origGetWindowsDirectoryW)(LPWSTR lpBuffer, UINT uSize) = GetWindowsDirectoryW;
+
+BOOL(WINAPI* origSetFileTime)(HANDLE hFile, const FILETIME* lpCreationTime, const FILETIME* lpLastAccessTime, const FILETIME* lpLastWriteTime) = SetFileTime;
+
 
 void hookKernel32APICalls(std::unordered_map<std::string, APICallCounter *> * hooks)
 {
@@ -68,6 +75,16 @@ void hookKernel32APICalls(std::unordered_map<std::string, APICallCounter *> * ho
     DetourAttach(&origCreateFileA, hookCreateFileA);
    
     DetourAttach(&origCreateFileW, hookCreateFileW);
+
+    currentCounter = new APICallCounter("CreateFileMapping", hooks);
+    DetourAttach(&origCreateFileMappingA, hookCreateFileMappingA);
+
+    currentCounter = new APICallCounter("GetWindowsDirectory", hooks);
+    DetourAttach(&origGetWindowsDirectoryA, hookGetWindowsDirectoryA);
+    DetourAttach(&origGetWindowsDirectoryW, hookGetWindowsDirectoryW);
+
+    currentCounter = new APICallCounter("SetFileTime", hooks);
+    DetourAttach(&origSetFileTime, hookSetFileTime);
 
     DetourTransactionCommit();
 
@@ -146,3 +163,40 @@ HANDLE WINAPI hookCreateFileW(LPCWSTR lpFileName, DWORD dwDesiredAccess, DWORD d
 
     return origCreateFileW(lpFileName, dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
 }
+
+HANDLE WINAPI hookCreateFileMappingA(HANDLE hFile, LPSECURITY_ATTRIBUTES lpFileMappingAttributes, DWORD flProtect, DWORD dwMaximumSizeHigh, DWORD dwMaximumSizeLow, LPCSTR lpName)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called CreateFileMappingA\n";
+    counterMap.at("CreateFileMapping")->incrementCall();
+
+    return origCreateFileMappingA(hFile, lpFileMappingAttributes, flProtect, dwMaximumSizeHigh, dwMaximumSizeLow, lpName);
+}
+
+UINT WINAPI hookGetWindowsDirectoryA(LPSTR lpBuffer, UINT uSize)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called GetWindowsDirectoryA\n";
+    counterMap.at("GetWindowsDirectory")->incrementCall();
+
+    return origGetWindowsDirectoryA(lpBuffer, uSize);
+}
+
+UINT WINAPI hookGetWindowsDirectoryW(LPWSTR lpBuffer, UINT uSize)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called GetWindowsDirectoryW\n";
+    counterMap.at("GetWindowsDirectory")->incrementCall();
+
+    return origGetWindowsDirectoryW(lpBuffer, uSize);
+}
+
+BOOL WINAPI hookSetFileTime(HANDLE hFile, const FILETIME* lpCreationTime, const FILETIME* lpLastAccessTime, const FILETIME* lpLastWriteTime)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called SetFileTime\n";
+    counterMap.at("SetFileTime")->incrementCall();
+    
+    return origSetFileTime(hFile, lpCreationTime, lpLastAccessTime, lpLastWriteTime);
+}
+
