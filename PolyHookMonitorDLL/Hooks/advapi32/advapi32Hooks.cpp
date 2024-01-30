@@ -67,6 +67,13 @@ LSTATUS(__stdcall* origRegOpenKeyExW)(HKEY hKey, LPCWSTR lpSubKey, DWORD ulOptio
 LSTATUS(__stdcall* origRegSetValueExA)(HKEY hKey, LPCSTR lpValueName, DWORD Reserved, DWORD dwType, const BYTE* lpData, DWORD cbData) = RegSetValueExA;
 LSTATUS(__stdcall* origRegSetValueExW)(HKEY hKey, LPCWSTR lpValueName, DWORD Reserved, DWORD dwType, const BYTE* lpData, DWORD cbData) = RegSetValueExW;
 
+LSTATUS(__stdcall* origRegDeleteKeyExA)(HKEY hKey, LPCSTR lpSubKey, REGSAM samDesired, DWORD Reserved) = RegDeleteKeyExA;
+LSTATUS(__stdcall* origRegDeleteKeyExW)(HKEY hKey, LPCWSTR lpSubKey, REGSAM samDesired, DWORD Reserved) = RegDeleteKeyExW;
+
+LSTATUS(__stdcall* origRegGetValueA)(HKEY hKey, LPCSTR lpSubKey, LPCSTR lpValue, DWORD dwFlags, LPDWORD pdwType, PVOID pvData, LPDWORD pcbData) = RegGetValueA;
+LSTATUS(__stdcall* origRegGetValueW)(HKEY hKey, LPCWSTR lpSubKey, LPCWSTR lpValue, DWORD dwFlags, LPDWORD pdwType, PVOID pvData, LPDWORD pcbData) = RegGetValueW;
+
+
 
 
 void hookadvapi32APICalls(std::unordered_map<std::string, APICallCounter*>* hooks)
@@ -102,6 +109,14 @@ void hookadvapi32APICalls(std::unordered_map<std::string, APICallCounter*>* hook
 	currentCounter = new APICallCounter("RegSetValue", hooks);
 	DetourAttach(&origRegSetValueExA, hookRegSetValueExA);
 	DetourAttach(&origRegSetValueExW, hookRegSetValueExW);
+
+	currentCounter = new APICallCounter("RegDeleteKey", hooks);
+	DetourAttach(&origRegDeleteKeyExA, hookRegDeleteKeyExA);
+	DetourAttach(&origRegDeleteKeyExW, hookRegDeleteKeyExW);
+
+	currentCounter = new APICallCounter("RegGetValue", hooks);
+	DetourAttach(&origRegGetValueA, hookRegGetValueA);
+	DetourAttach(&origRegGetValueW, hookRegGetValueW);
 
 
 	DetourTransactionCommit();
@@ -269,6 +284,7 @@ LSTATUS __stdcall hookRegSetValueExA(HKEY hKey, LPCSTR lpValueName, DWORD Reserv
 
 	return origRegSetValueExA(hKey, lpValueName, Reserved, dwType, lpData, cbData);
 }
+
 LSTATUS __stdcall hookRegSetValueExW(HKEY hKey, LPCWSTR lpValueName, DWORD Reserved, DWORD dwType, const BYTE* lpData, DWORD cbData)
 {
 	if (PRINT_CALLS)
@@ -276,4 +292,40 @@ LSTATUS __stdcall hookRegSetValueExW(HKEY hKey, LPCWSTR lpValueName, DWORD Reser
 	counterMap.at("RegSetValue")->incrementCall();
 
 	return origRegSetValueExW(hKey, lpValueName, Reserved, dwType, lpData, cbData);
+}
+
+LSTATUS __stdcall hookRegDeleteKeyExA(HKEY hKey, LPCSTR lpSubKey, REGSAM samDesired, DWORD Reserved)
+{
+	if (PRINT_CALLS)
+		std::cout << "Called RegDeleteValueExA\n";
+	counterMap.at("RegDeleteKey")->incrementCall();
+
+	return origRegDeleteKeyExA(hKey, lpSubKey, samDesired, Reserved);
+}
+
+LSTATUS __stdcall hookRegDeleteKeyExW(HKEY hKey, LPCWSTR lpSubKey, REGSAM samDesired, DWORD Reserved)
+{
+	if (PRINT_CALLS)
+		std::cout << "Called RegDeleteValueExW\n";
+	counterMap.at("RegDeleteKey")->incrementCall();
+
+	return origRegDeleteKeyExW(hKey, lpSubKey, samDesired, Reserved);
+}
+
+LSTATUS __stdcall hookRegGetValueA(HKEY hKey, LPCSTR lpSubKey, LPCSTR lpValue, DWORD dwFlags, LPDWORD pdwType, PVOID pvData, LPDWORD pcbData)
+{
+	if (PRINT_CALLS)
+		std::cout << "Called RegGetValueA\n";
+	counterMap.at("RegGetValue")->incrementCall();
+
+	return origRegGetValueA(hKey, lpSubKey, lpValue, dwFlags, pdwType, pvData, pcbData);
+}
+
+LSTATUS __stdcall hookRegGetValueW(HKEY hKey, LPCWSTR lpSubKey, LPCWSTR lpValue, DWORD dwFlags, LPDWORD pdwType, PVOID pvData, LPDWORD pcbData)
+{
+	if (PRINT_CALLS)
+		std::cout << "Called RegGetValueW\n";
+	counterMap.at("RegGetValue")->incrementCall();
+
+	return origRegGetValueW(hKey, lpSubKey, lpValue, dwFlags, pdwType, pvData, pcbData);
 }

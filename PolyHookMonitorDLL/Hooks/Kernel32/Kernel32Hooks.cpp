@@ -23,6 +23,23 @@ UINT(WINAPI* origGetWindowsDirectoryW)(LPWSTR lpBuffer, UINT uSize) = GetWindows
 
 BOOL(WINAPI* origSetFileTime)(HANDLE hFile, const FILETIME* lpCreationTime, const FILETIME* lpLastAccessTime, const FILETIME* lpLastWriteTime) = SetFileTime;
 
+LPVOID(WINAPI* origVirtualAlloc)(LPVOID lpAddress, SIZE_T dwSize, DWORD flAllocationType, DWORD flProtect) = VirtualAlloc;
+
+LPVOID(WINAPI* origVirtualAllocEx)(HANDLE hProcess, LPVOID lpAddress, SIZE_T dwSize, DWORD flAllocationType, DWORD flProtect) = VirtualAllocEx;
+
+BOOL(WINAPI* origVirtualProtect)(LPVOID lpAddress, SIZE_T dwSize, DWORD flNewProtect, PDWORD lpflOldProtect) = VirtualProtect;
+
+BOOL(WINAPI* origReadProcessMemory)(HANDLE hProcess, LPCVOID lpBaseAddress, LPVOID lpBuffer, SIZE_T nSize, SIZE_T* lpNumberOfBytesRead) = ReadProcessMemory;
+
+BOOL(WINAPI* origWriteProcessMemory)(HANDLE hProcess, LPVOID lpBaseAddress, LPCVOID lpBuffer, SIZE_T nSize, SIZE_T* lpNumberOfBytesWritten) = WriteProcessMemory;
+
+HANDLE(WINAPI* origCreateRemoteThread)(HANDLE hProcess, LPSECURITY_ATTRIBUTES lpThreadAttributes, SIZE_T dwStackSize, LPTHREAD_START_ROUTINE lpStartAddress, LPVOID lpParameter, DWORD dwCreationFlags, LPDWORD lpThreadId) = CreateRemoteThread;
+
+DWORD(WINAPI* origQueueUserAPC)(PAPCFUNC pfnAPC, HANDLE hThread, ULONG_PTR dwData) = QueueUserAPC;
+
+BOOL(WINAPI* origConnectNamedPipe)(HANDLE hNamedPipe, LPOVERLAPPED lpOverlapped) = ConnectNamedPipe;
+
+HANDLE(WINAPI* origCreateNamedPipeA)(LPCSTR lpName, DWORD dwOpenMode, DWORD dwPipeMode, DWORD nMaxInstances, DWORD nOutBufferSize, DWORD nInBufferSize, DWORD nDefaultTimeOut, LPSECURITY_ATTRIBUTES lpSecurityAttributes) = CreateNamedPipeA;
 
 void hookKernel32APICalls(std::unordered_map<std::string, APICallCounter *> * hooks)
 {
@@ -85,6 +102,33 @@ void hookKernel32APICalls(std::unordered_map<std::string, APICallCounter *> * ho
 
     currentCounter = new APICallCounter("SetFileTime", hooks);
     DetourAttach(&origSetFileTime, hookSetFileTime);
+
+    currentCounter = new APICallCounter("VirtualAlloc", hooks);
+    DetourAttach(&origVirtualAlloc, hookVirtualAlloc);
+
+    currentCounter = new APICallCounter("VirtualAllocEx", hooks);
+    DetourAttach(&origVirtualAllocEx, hookVirtualAllocEx);
+
+    currentCounter = new APICallCounter("VirtualProtect", hooks);
+    DetourAttach(&origVirtualProtect, hookVirtualProtect);
+
+    currentCounter = new APICallCounter("ReadProcessMemory", hooks);
+    DetourAttach(&origReadProcessMemory, hookReadProcessMemory);
+
+    currentCounter = new APICallCounter("WriteProcessMemory", hooks);
+    DetourAttach(&origWriteProcessMemory, hookWriteProcessMemory);
+
+    currentCounter = new APICallCounter("CreateRemoteThread", hooks);
+    DetourAttach(&origCreateRemoteThread, hookCreateRemoteThread);
+
+    currentCounter = new APICallCounter("QueueUserAPC", hooks);
+    DetourAttach(&origQueueUserAPC, hookQueueUserAPC);
+
+    currentCounter = new APICallCounter("ConnectNamedPipe", hooks);
+    DetourAttach(&origConnectNamedPipe, hookConnectNamedPipe);
+
+    currentCounter = new APICallCounter("CreateNamedPipe", hooks);
+    DetourAttach(&origCreateNamedPipeA, hookCreateNamedPipeA);
 
     DetourTransactionCommit();
 
@@ -199,4 +243,93 @@ BOOL WINAPI hookSetFileTime(HANDLE hFile, const FILETIME* lpCreationTime, const 
     
     return origSetFileTime(hFile, lpCreationTime, lpLastAccessTime, lpLastWriteTime);
 }
+
+LPVOID WINAPI hookVirtualAlloc(LPVOID lpAddress, SIZE_T dwSize, DWORD flAllocationType, DWORD flProtect)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called VirtualAlloc\n";
+    counterMap.at("VirtualAlloc")->incrementCall();
+
+    return origVirtualAlloc(lpAddress, dwSize, flAllocationType, flProtect);
+}
+
+LPVOID WINAPI hookVirtualAllocEx(HANDLE hProcess, LPVOID lpAddress, SIZE_T dwSize, DWORD flAllocationType, DWORD flProtect)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called VirtualAllocEx\n";
+    counterMap.at("VirtualAllocEx")->incrementCall();
+
+    return origVirtualAllocEx(hProcess, lpAddress, dwSize, flAllocationType, flProtect);
+}
+
+BOOL WINAPI hookVirtualProtect(LPVOID lpAddress, SIZE_T dwSize, DWORD flNewProtect, PDWORD lpflOldProtect)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called VirtualProtect\n";
+    counterMap.at("VirtualProtect")->incrementCall();
+
+    return origVirtualProtect(lpAddress, dwSize, flNewProtect, lpflOldProtect);
+}
+
+BOOL WINAPI hookReadProcessMemory(HANDLE hProcess, LPCVOID lpBaseAddress, LPVOID lpBuffer, SIZE_T nSize, SIZE_T* lpNumberOfBytesRead)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called ReadProcessMemory\n";
+    counterMap.at("ReadProcessMemory")->incrementCall();
+
+    return origReadProcessMemory(hProcess, lpBaseAddress, lpBuffer, nSize, lpNumberOfBytesRead);
+}
+
+BOOL WINAPI hookWriteProcessMemory(HANDLE hProcess, LPVOID lpBaseAddress, LPCVOID lpBuffer, SIZE_T nSize, SIZE_T* lpNumberOfBytesWritten)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called WriteProcessMemory\n";
+    counterMap.at("WriteProcessMemory")->incrementCall();
+
+    return origWriteProcessMemory(hProcess, lpBaseAddress, lpBuffer, nSize, lpNumberOfBytesWritten);
+}
+
+HANDLE WINAPI hookCreateRemoteThread(HANDLE hProcess, LPSECURITY_ATTRIBUTES lpThreadAttributes, SIZE_T dwStackSize, LPTHREAD_START_ROUTINE lpStartAddress, LPVOID lpParameter, DWORD dwCreationFlags, LPDWORD lpThreadId)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called CreateRemoteThread\n";
+    counterMap.at("CreateRemoteThread")->incrementCall();
+
+    return origCreateRemoteThread(hProcess, lpThreadAttributes, dwStackSize, lpStartAddress, lpParameter, dwCreationFlags, lpThreadId);
+}
+
+DWORD WINAPI hookQueueUserAPC(PAPCFUNC pfnAPC, HANDLE hThread, ULONG_PTR dwData)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called QueueUserAPC\n";
+    counterMap.at("QueueUserAPC")->incrementCall();
+
+    return origQueueUserAPC(pfnAPC, hThread, dwData);
+}
+
+BOOL WINAPI hookConnectNamedPipe(HANDLE hNamedPipe, LPOVERLAPPED lpOverlapped)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called ConnectNamedPipe\n";
+    counterMap.at("ConnectNamedPipe")->incrementCall();
+
+    return origConnectNamedPipe(hNamedPipe, lpOverlapped);
+}
+
+HANDLE WINAPI hookCreateNamedPipeA(LPCSTR lpName, DWORD dwOpenMode, DWORD dwPipeMode, DWORD nMaxInstances, DWORD nOutBufferSize, DWORD nInBufferSize, DWORD nDefaultTimeOut, LPSECURITY_ATTRIBUTES lpSecurityAttributes)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called CreateNamedPipeA\n";
+    counterMap.at("CreateNamedPipe")->incrementCall();
+
+    return origCreateNamedPipeA(lpName, dwOpenMode, dwPipeMode, nMaxInstances, nOutBufferSize, nInBufferSize, nDefaultTimeOut, lpSecurityAttributes);
+}
+
+
+
+
+
+
+
+
 
