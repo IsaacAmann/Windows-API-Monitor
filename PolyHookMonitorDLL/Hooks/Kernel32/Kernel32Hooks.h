@@ -40,3 +40,17 @@ DWORD WINAPI hookQueueUserAPC(PAPCFUNC pfnAPC, HANDLE hThread, ULONG_PTR dwData)
 BOOL WINAPI hookConnectNamedPipe(HANDLE hNamedPipe, LPOVERLAPPED lpOverlapped);
 
 HANDLE WINAPI hookCreateNamedPipeA(LPCSTR lpName, DWORD dwOpenMode, DWORD dwPipeMode, DWORD nMaxInstances, DWORD nOutBufferSize, DWORD nInBufferSize, DWORD nDefaultTimeOut, LPSECURITY_ATTRIBUTES lpSecurityAttributes);
+
+BOOL WINAPI hookEnumProcesses(DWORD* lpidProcess, DWORD cb, LPDWORD lpcbNeeded);
+
+BOOL WINAPI hookEnumProcessModules(HANDLE hProcess, HMODULE* lphModule, DWORD cb, LPDWORD lpcbNeeded);
+
+FARPROC WINAPI hookGetProcAddress(HMODULE hModule, LPCSTR lpProcName);
+
+DWORD WINAPI hookGetModuleFileNameA(HMODULE hModule, LPSTR lpFilename, DWORD nSize);
+DWORD WINAPI hookGetModuleFileNameW(HMODULE hModule, LPWSTR lpFilename, DWORD nSize);
+
+HMODULE WINAPI hookGetModuleHandleA(LPCSTR lpModuleName);
+HMODULE WINAPI hookGetModuleHandleW(LPCWSTR lpModuleName);
+
+BOOL WINAPI hookPeekNamedPipe(HANDLE hNamedPipe, LPVOID lpBuffer, DWORD nBufferSize, LPDWORD lpBytesRead, LPDWORD lpTotalBytesAvail, LPDWORD lpBytesLeftThisMessage);

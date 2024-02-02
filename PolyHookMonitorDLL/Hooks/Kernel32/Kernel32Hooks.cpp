@@ -41,6 +41,23 @@ BOOL(WINAPI* origConnectNamedPipe)(HANDLE hNamedPipe, LPOVERLAPPED lpOverlapped)
 
 HANDLE(WINAPI* origCreateNamedPipeA)(LPCSTR lpName, DWORD dwOpenMode, DWORD dwPipeMode, DWORD nMaxInstances, DWORD nOutBufferSize, DWORD nInBufferSize, DWORD nDefaultTimeOut, LPSECURITY_ATTRIBUTES lpSecurityAttributes) = CreateNamedPipeA;
 
+BOOL(WINAPI* origEnumProcesses)(DWORD* lpidProcess, DWORD cb, LPDWORD lpcbNeeded) = EnumProcesses;
+
+BOOL(WINAPI* origEnumProcessModules)(HANDLE hProcess, HMODULE* lphModule, DWORD cb, LPDWORD lpcbNeeded) = EnumProcessModules;
+
+FARPROC(WINAPI* origGetProcAddress)(HMODULE hModule, LPCSTR lpProcName) = GetProcAddress;
+
+DWORD(WINAPI* origGetModuleFileNameA)(HMODULE hModule, LPSTR lpFilename, DWORD nSize) = GetModuleFileNameA;
+
+DWORD(WINAPI* origGetModuleFileNameW)(HMODULE hModule, LPWSTR lpFilename, DWORD nSize) = GetModuleFileNameW;
+
+HMODULE(WINAPI* origGetModuleHandleA)(LPCSTR lpModuleName) = GetModuleHandleA;
+
+HMODULE(WINAPI* origGetModuleHandleW)(LPCWSTR lpModuleName) = GetModuleHandleW;
+
+BOOL(WINAPI* origPeekNamedPipe)(HANDLE hNamedPipe, LPVOID lpBuffer, DWORD nBufferSize, LPDWORD lpBytesRead, LPDWORD lpTotalBytesAvail, LPDWORD lpBytesLeftThisMessage) = PeekNamedPipe;
+
+
 void hookKernel32APICalls(std::unordered_map<std::string, APICallCounter *> * hooks)
 {
     /*
@@ -129,6 +146,23 @@ void hookKernel32APICalls(std::unordered_map<std::string, APICallCounter *> * ho
 
     currentCounter = new APICallCounter("CreateNamedPipe", hooks);
     DetourAttach(&origCreateNamedPipeA, hookCreateNamedPipeA);
+
+    currentCounter = new APICallCounter("EnumProcesses", hooks);
+    DetourAttach(&origEnumProcesses, hookEnumProcesses);
+
+    currentCounter = new APICallCounter("EnumProcessModules", hooks);
+    DetourAttach(&origEnumProcessModules, hookEnumProcessModules);
+
+    currentCounter = new APICallCounter("GetModuleFileName", hooks);
+    DetourAttach(&origGetModuleFileNameA, hookGetModuleFileNameA);
+    DetourAttach(&origGetModuleFileNameW, hookGetModuleFileNameW);
+
+    currentCounter = new APICallCounter("GetModuleHandle", hooks);
+    DetourAttach(&origGetModuleHandleA, hookGetModuleHandleA);
+    DetourAttach(&origGetModuleHandleW, hookGetModuleHandleW);
+
+    currentCounter = new APICallCounter("PeekNamedPipe", hooks);
+    DetourAttach(&origPeekNamedPipe, hookPeekNamedPipe);
 
     DetourTransactionCommit();
 
@@ -323,6 +357,78 @@ HANDLE WINAPI hookCreateNamedPipeA(LPCSTR lpName, DWORD dwOpenMode, DWORD dwPipe
     counterMap.at("CreateNamedPipe")->incrementCall();
 
     return origCreateNamedPipeA(lpName, dwOpenMode, dwPipeMode, nMaxInstances, nOutBufferSize, nInBufferSize, nDefaultTimeOut, lpSecurityAttributes);
+}
+
+BOOL WINAPI hookEnumProcesses(DWORD* lpidProcess, DWORD cb, LPDWORD lpcbNeeded)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called EnumProcesses\n";
+    counterMap.at("EnumProcesses")->incrementCall();
+
+    return origEnumProcesses(lpidProcess, cb, lpcbNeeded);
+}
+
+BOOL WINAPI hookEnumProcessModules(HANDLE hProcess, HMODULE* lphModule, DWORD cb, LPDWORD lpcbNeeded)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called EnumProcessModules\n";
+    counterMap.at("EnumProcessModules")->incrementCall();
+
+    return origEnumProcessModules(hProcess, lphModule, cb, lpcbNeeded);
+}
+
+FARPROC WINAPI hookGetProcAddress(HMODULE hModule, LPCSTR lpProcName)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called GetProcAddress\n";
+    counterMap.at("GetProcAddress")->incrementCall();
+
+    return origGetProcAddress(hModule, lpProcName);
+}
+
+DWORD WINAPI hookGetModuleFileNameA(HMODULE hModule, LPSTR lpFilename, DWORD nSize)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called GetModuleFileNameA\n";
+    counterMap.at("GetModuleFileName")->incrementCall();
+
+    return origGetModuleFileNameA(hModule, lpFilename, nSize);
+}
+
+DWORD WINAPI hookGetModuleFileNameW(HMODULE hModule, LPWSTR lpFilename, DWORD nSize)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called GetModuleFileNameW\n";
+    counterMap.at("GetModuleFileName")->incrementCall();
+
+    return origGetModuleFileNameW(hModule, lpFilename, nSize);
+}
+
+HMODULE WINAPI hookGetModuleHandleA(LPCSTR lpModuleName)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called GetModuleHandleA\n";
+    counterMap.at("GetModuleHandle")->incrementCall();
+
+    return origGetModuleHandleA(lpModuleName);
+}
+
+HMODULE WINAPI hookGetModuleHandleW(LPCWSTR lpModuleName)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called GetModuleHandleW\n";
+    counterMap.at("GetModuleHandle")->incrementCall();
+
+    return origGetModuleHandleW(lpModuleName);
+}
+
+BOOL WINAPI hookPeekNamedPipe(HANDLE hNamedPipe, LPVOID lpBuffer, DWORD nBufferSize, LPDWORD lpBytesRead, LPDWORD lpTotalBytesAvail, LPDWORD lpBytesLeftThisMessage)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called PeekNamedPipe\n";
+    counterMap.at("PeekNamedPipe")->incrementCall();
+
+    return origPeekNamedPipe(hNamedPipe, lpBuffer, nBufferSize, lpBytesRead, lpTotalBytesAvail, lpBytesLeftThisMessage);
 }
 
 
