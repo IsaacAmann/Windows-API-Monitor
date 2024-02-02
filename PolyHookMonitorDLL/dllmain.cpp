@@ -69,6 +69,7 @@ void hookAPICalls()
     hookwinsock32APICalls(&counterMap);
     hookwininetAPICalls(&counterMap);
     hookadvapi32APICalls(&counterMap);
+    hookUser32APICalls(&counterMap);
 }
 
 DWORD WINAPI MessengerThreadExecute(LPVOID lpParam)

@@ -126,7 +126,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>detours.lib;ws2_32.lib;wininet.lib;Advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>detours.lib;ws2_32.lib;wininet.lib;Advapi32.lib;User32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -154,6 +154,7 @@
     <ClInclude Include="Hooks\advapi32\advapi32Hooks.h" />
     <ClInclude Include="Hooks\Hooks.h" />
     <ClInclude Include="Hooks\Kernel32\Kernel32Hooks.h" />
+    <ClInclude Include="Hooks\User32\User32Hooks.h" />
     <ClInclude Include="Hooks\wininet\wininetHooks.h" />
     <ClInclude Include="Hooks\wsock32\wsock32Hooks.h" />
     <ClInclude Include="pch.h" />
@@ -163,6 +164,7 @@
     <ClCompile Include="Hooks\advapi32\advapi32Hooks.cpp" />
     <ClCompile Include="Hooks\Hooks.cpp" />
     <ClCompile Include="Hooks\Kernel32\Kernel32Hooks.cpp" />
+    <ClCompile Include="Hooks\User32\User32Hooks.cpp" />
     <ClCompile Include="Hooks\wininet\wininetHooks.cpp" />
     <ClCompile Include="Hooks\wsock32\wsock32Hooks.cpp" />
     <ClCompile Include="pch.cpp">
