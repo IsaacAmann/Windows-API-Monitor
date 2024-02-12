@@ -12,6 +12,14 @@ HHOOK(WINAPI* origSetWindowsHookExW)(int idHook, HOOKPROC lpfn, HINSTANCE hmod, 
 
 HWND(WINAPI* origGetForegroundWindow)() = GetForegroundWindow;
 
+HDC(WINAPI* origGetDC)(HWND hWnd) = GetDC;
+
+SHORT(WINAPI* origGetKeyState)(int nVirtKey) = GetKeyState;
+
+UINT(WINAPI* origMapVirtualKeyA)(UINT uCode, UINT uMapType) = MapVirtualKeyA;
+UINT(WINAPI* origMapVirtualKeyW)(UINT uCode, UINT uMapType) = MapVirtualKeyW;
+
+
 void hookUser32APICalls(std::unordered_map<std::string, APICallCounter*>* hooks)
 {
 
@@ -34,6 +42,16 @@ void hookUser32APICalls(std::unordered_map<std::string, APICallCounter*>* hooks)
 
 	currentCounter = new APICallCounter("GetForegroundWindow", hooks);
 	DetourAttach(&origGetForegroundWindow, hookGetForegroundWindow);
+
+	currentCounter = new APICallCounter("GetDC", hooks);
+	DetourAttach(&origGetDC, hookGetDC);
+
+	currentCounter = new APICallCounter("GetKeyState", hooks);
+	DetourAttach(&origGetKeyState, hookGetKeyState);
+
+	currentCounter = new APICallCounter("MapVirtualKey", hooks);
+	DetourAttach(&origMapVirtualKeyA, hookMapVirtualKeyA);
+	DetourAttach(&origMapVirtualKeyW, hookMapVirtualKeyW);
 
 	DetourTransactionCommit();
 }
@@ -81,4 +99,39 @@ HWND WINAPI hookGetForegroundWindow()
 	counterMap.at("GetForegroundWindow")->incrementCall();
 
 	return origGetForegroundWindow();
+}
+
+HDC WINAPI hookGetDC(HWND hWnd)
+{
+	if (PRINT_CALLS)
+		std::cout << "Called GetDC\n";
+	counterMap.at("GetDC")->incrementCall();
+
+	return origGetDC(hWnd);
+}
+
+SHORT hookGetKeyState(int nVirtKey)
+{
+	if (PRINT_CALLS)
+		std::cout << "Called GetKeyState\n";
+	counterMap.at("GetKeyState")->incrementCall();
+
+	return origGetKeyState(nVirtKey);
+}
+
+UINT hookMapVirtualKeyA(UINT uCode, UINT uMapType)
+{
+	if (PRINT_CALLS)
+		std::cout << "Called MapVirtualKeyA\n";
+	counterMap.at("MapVirtualKey")->incrementCall();
+
+	return origMapVirtualKeyA(uCode, uMapType);
+}
+UINT hookMapVirtualKeyW(UINT uCode, UINT uMapType)
+{
+	if (PRINT_CALLS)
+		std::cout << "Called MapVirtualKeyW\n";
+	counterMap.at("MapVirtualKey")->incrementCall();
+
+	return origMapVirtualKeyW(uCode, uMapType);
 }

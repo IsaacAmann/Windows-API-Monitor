@@ -16,3 +16,10 @@ HHOOK WINAPI hookSetWindowsHookExA(int idHook, HOOKPROC lpfn, HINSTANCE hmod, DW
 HHOOK WINAPI hookSetWindowsHookExW(int idHook, HOOKPROC lpfn, HINSTANCE hmod, DWORD dwThreadId);
 
 HWND WINAPI hookGetForegroundWindow();
+
+HDC WINAPI hookGetDC(HWND hWnd);
+
+SHORT hookGetKeyState(int nVirtKey);
+
+UINT hookMapVirtualKeyA(UINT uCode, UINT uMapType);
+UINT hookMapVirtualKeyW(UINT uCode, UINT uMapType);

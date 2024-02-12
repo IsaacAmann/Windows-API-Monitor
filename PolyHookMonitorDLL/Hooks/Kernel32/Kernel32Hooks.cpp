@@ -62,6 +62,7 @@ BOOL(WINAPI* origTerminateProcess)(HANDLE hProcess, UINT uExitCode) = TerminateP
 BOOL(WINAPI* origCreateProcessA)(LPCSTR lpApplicationName, LPSTR lpCommandLine, LPSECURITY_ATTRIBUTES lpProcessAttributes, LPSECURITY_ATTRIBUTES lpThreadAttributes, BOOL bInheritHandles, DWORD dwCreationFlags, LPVOID lpEnvironment, LPCSTR lpCurrentDirectory, LPSTARTUPINFOA lpStartupInfo, LPPROCESS_INFORMATION lpProcessInformation) = CreateProcessA;
 BOOL(WINAPI* origCreateProcessW)(LPCWSTR lpApplicationName, LPWSTR lpCommandLine, LPSECURITY_ATTRIBUTES lpProcessAttributes, LPSECURITY_ATTRIBUTES lpThreadAttributes, BOOL bInheritHandles, DWORD dwCreationFlags, LPVOID lpEnvironment, LPCWSTR lpCurrentDirectory, LPSTARTUPINFOW lpStartupInfo, LPPROCESS_INFORMATION lpProcessInformation) = CreateProcessW;
 
+BOOL(WINAPI* origIsDebuggerPresent)() = IsDebuggerPresent;
 
 void hookKernel32APICalls(std::unordered_map<std::string, APICallCounter *> * hooks)
 {
@@ -175,6 +176,9 @@ void hookKernel32APICalls(std::unordered_map<std::string, APICallCounter *> * ho
     currentCounter = new APICallCounter("CreateProcess", hooks);
     DetourAttach(&origCreateProcessA, hookCreateProcessA);
     DetourAttach(&origCreateProcessW, hookCreateProcessW);
+
+    currentCounter = new APICallCounter("IsDebuggerPresent", hooks);
+    DetourAttach(&origIsDebuggerPresent, hookIsDebuggerPresent);
 
     DetourTransactionCommit();
 
@@ -467,6 +471,15 @@ BOOL WINAPI hookCreateProcessW(LPCWSTR lpApplicationName, LPWSTR lpCommandLine, 
     counterMap.at("CreateProcess")->incrementCall();
 
     return origCreateProcessW(lpApplicationName, lpCommandLine, lpProcessAttributes, lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation);
+}
+
+BOOL WINAPI hookIsDebuggerPresent()
+{
+    if (PRINT_CALLS)
+        std::cout << "Called IsDebuggerPresent\n";
+    counterMap.at("IsDebuggerPresent")->incrementCall();
+
+    return origIsDebuggerPresent();
 }
 
 
