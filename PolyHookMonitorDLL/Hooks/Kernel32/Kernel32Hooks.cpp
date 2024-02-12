@@ -57,6 +57,11 @@ HMODULE(WINAPI* origGetModuleHandleW)(LPCWSTR lpModuleName) = GetModuleHandleW;
 
 BOOL(WINAPI* origPeekNamedPipe)(HANDLE hNamedPipe, LPVOID lpBuffer, DWORD nBufferSize, LPDWORD lpBytesRead, LPDWORD lpTotalBytesAvail, LPDWORD lpBytesLeftThisMessage) = PeekNamedPipe;
 
+BOOL(WINAPI* origTerminateProcess)(HANDLE hProcess, UINT uExitCode) = TerminateProcess;
+
+BOOL(WINAPI* origCreateProcessA)(LPCSTR lpApplicationName, LPSTR lpCommandLine, LPSECURITY_ATTRIBUTES lpProcessAttributes, LPSECURITY_ATTRIBUTES lpThreadAttributes, BOOL bInheritHandles, DWORD dwCreationFlags, LPVOID lpEnvironment, LPCSTR lpCurrentDirectory, LPSTARTUPINFOA lpStartupInfo, LPPROCESS_INFORMATION lpProcessInformation) = CreateProcessA;
+BOOL(WINAPI* origCreateProcessW)(LPCWSTR lpApplicationName, LPWSTR lpCommandLine, LPSECURITY_ATTRIBUTES lpProcessAttributes, LPSECURITY_ATTRIBUTES lpThreadAttributes, BOOL bInheritHandles, DWORD dwCreationFlags, LPVOID lpEnvironment, LPCWSTR lpCurrentDirectory, LPSTARTUPINFOW lpStartupInfo, LPPROCESS_INFORMATION lpProcessInformation) = CreateProcessW;
+
 
 void hookKernel32APICalls(std::unordered_map<std::string, APICallCounter *> * hooks)
 {
@@ -163,6 +168,13 @@ void hookKernel32APICalls(std::unordered_map<std::string, APICallCounter *> * ho
 
     currentCounter = new APICallCounter("PeekNamedPipe", hooks);
     DetourAttach(&origPeekNamedPipe, hookPeekNamedPipe);
+
+    currentCounter = new APICallCounter("TerminateProcess", hooks);
+    DetourAttach(&origTerminateProcess, hookTerminateProcess);
+
+    currentCounter = new APICallCounter("CreateProcess", hooks);
+    DetourAttach(&origCreateProcessA, hookCreateProcessA);
+    DetourAttach(&origCreateProcessW, hookCreateProcessW);
 
     DetourTransactionCommit();
 
@@ -431,6 +443,31 @@ BOOL WINAPI hookPeekNamedPipe(HANDLE hNamedPipe, LPVOID lpBuffer, DWORD nBufferS
     return origPeekNamedPipe(hNamedPipe, lpBuffer, nBufferSize, lpBytesRead, lpTotalBytesAvail, lpBytesLeftThisMessage);
 }
 
+BOOL WINAPI hookTerminateProcess(HANDLE hProcess, UINT ExitCode)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called TerminateProcess\n";
+    counterMap.at("TerminateProcess")->incrementCall();
+
+    return origTerminateProcess(hProcess, ExitCode);
+}
+
+BOOL WINAPI hookCreateProcessA(LPCSTR lpApplicationName, LPSTR lpCommandLine, LPSECURITY_ATTRIBUTES lpProcessAttributes, LPSECURITY_ATTRIBUTES lpThreadAttributes, BOOL bInheritHandles, DWORD dwCreationFlags, LPVOID lpEnvironment, LPCSTR lpCurrentDirectory, LPSTARTUPINFOA lpStartupInfo, LPPROCESS_INFORMATION lpProcessInformation)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called CreateProcessA\n";
+    counterMap.at("CreateProcess")->incrementCall();
+
+    return origCreateProcessA(lpApplicationName, lpCommandLine, lpProcessAttributes, lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation);
+}
+BOOL WINAPI hookCreateProcessW(LPCWSTR lpApplicationName, LPWSTR lpCommandLine, LPSECURITY_ATTRIBUTES lpProcessAttributes, LPSECURITY_ATTRIBUTES lpThreadAttributes, BOOL bInheritHandles, DWORD dwCreationFlags, LPVOID lpEnvironment, LPCWSTR lpCurrentDirectory, LPSTARTUPINFOW lpStartupInfo, LPPROCESS_INFORMATION lpProcessInformation)
+{
+    if (PRINT_CALLS)
+        std::cout << "Called CreateProcessW\n";
+    counterMap.at("CreateProcess")->incrementCall();
+
+    return origCreateProcessW(lpApplicationName, lpCommandLine, lpProcessAttributes, lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation);
+}
 
 
 
