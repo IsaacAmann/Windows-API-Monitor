@@ -7,7 +7,7 @@ extern std::string apiKey;
 extern std::string API_ENDPOINT;
 
 const bool USE_TEST_PID = true;
-const int TEST_PID = 22088;
+const int TEST_PID = 21484;
 
 ProcessMonitor::~ProcessMonitor()
 {
@@ -24,7 +24,7 @@ bool ProcessMonitor::initialize()
 	ExcludedPID.push_back((int)GetCurrentProcessId);
 	//Add excluded process names
 	ExcludedProcessNames.push_back(std::string("explorer.exe"));
-	ExcludedProcessNames.push_back(std::string("TestConsoleApp.exe"));
+	//ExcludedProcessNames.push_back(std::string("TestConsoleApp.exe"));
 
 	return true;
 }
@@ -102,6 +102,14 @@ void sendDataPoint(TrackedProcess* process)
 		//Set clientId and apiKey for json
 		payload["clientId"] = clientId;
 		payload["token"] = apiKey;
+
+		//Set process info
+		char imageName[MAX_PATH];
+		char executablePath[MAX_PATH];
+
+		GetProcessImageFileNameA(process->processHandle, executablePath, MAX_PATH);
+
+		payload["executablePath"] = std::string(executablePath);
 
 		//Add each Win32 API call count to json
 		//Kernel32
@@ -234,9 +242,9 @@ void ProcessMonitor::scanForProcesses()
 			for (int j = 0; j < ExcludedProcessNames.size(); j++)
 			{
 				std::string imageNameString = std::string(imageName);
-				if (imageNameString.find(ExcludedProcessNames[j]) == std::string::npos)
+				if (imageNameString.find(ExcludedProcessNames[j]) != std::string::npos)
 				{
-					//std::cout << "byname" << imageNameString << std::string(imageName);
+					//std::cout << "byname" << imageNameString << ExcludedProcessNames[j] << std::endl;
 
 					excluded = true;
 					break;
@@ -247,7 +255,7 @@ void ProcessMonitor::scanForProcesses()
 			{
 				if (ExcludedPID[j] == i)
 				{
-					//std::cout << "byPID\n";
+					std::cout << "byPID\n";
 					excluded = true;
 					break;
 				}
