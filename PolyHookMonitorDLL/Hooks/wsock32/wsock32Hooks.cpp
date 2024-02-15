@@ -18,38 +18,38 @@ void hookwinsock32APICalls(std::unordered_map<std::string, APICallCounter*>* hoo
 
     APICallCounter* currentCounter = NULL;
 
-    /*
+    
     //Hooking using Microsoft Detours library
     DetourTransactionBegin();
-    currentCounter = new APICallCounter("socket", hooks, );
+    currentCounter = new APICallCounter("socket", hooks, &(callCountContainer->csocket));
     DetourRestoreAfterWith();
     DetourAttach(&origsocket, hooksocket);
     
-    currentCounter = new APICallCounter("bind", hooks);
+    currentCounter = new APICallCounter("bind", hooks, &(callCountContainer->cbind));
     DetourAttach(&origbind, hookbind);
 
-    currentCounter = new APICallCounter("listen", hooks);
+    currentCounter = new APICallCounter("listen", hooks, &(callCountContainer->clisten));
     DetourAttach(&origlisten, hooklisten);
 
-    currentCounter = new APICallCounter("accept", hooks);
+    currentCounter = new APICallCounter("accept", hooks, &(callCountContainer->caccept));
     DetourAttach(&origaccept, hookaccept);
 
-    currentCounter = new APICallCounter("connect", hooks);
+    currentCounter = new APICallCounter("connect", hooks, &(callCountContainer->cconnect));
     DetourAttach(&origconnect, hookconnect);
 
-    currentCounter = new APICallCounter("send", hooks);
+    currentCounter = new APICallCounter("send", hooks, &(callCountContainer->csend));
     DetourAttach(&origsend, hooksend);
 
-    currentCounter = new APICallCounter("recv", hooks);
+    currentCounter = new APICallCounter("recv", hooks, &(callCountContainer->crecv));
     DetourAttach(&origrecv, hookrecv);
 
-    currentCounter = new APICallCounter("gethostname", hooks);
+    currentCounter = new APICallCounter("gethostname", hooks, &(callCountContainer->cgethostname));
     DetourAttach(&origgethostname, hookgethostname);
 
    
 
     DetourTransactionCommit();
-     */
+    
 }
 
 SOCKET WSAAPI hooksocket(int af, int type, int protocol)

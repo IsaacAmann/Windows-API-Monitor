@@ -23,6 +23,7 @@ typedef struct CountUpdateMessage
 
 typedef struct CallCountContainer
 {
+	//Kernel32
 	int cGetCurrentProcessId;
 	int cOpenProcess;
 	int cWriteFile;
@@ -47,6 +48,15 @@ typedef struct CallCountContainer
 	int cTerminateProcess;
 	int cCreateProcess;
 	int cIsDebuggerPresent;
+	//wsock32
+	int csocket;
+	int cbind;
+	int clisten;
+	int caccept;
+	int cconnect;
+	int csend;
+	int crecv;
+	int cgethostname;
 
 } CallCountContainer;
 
