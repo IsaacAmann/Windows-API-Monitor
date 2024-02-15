@@ -7,7 +7,7 @@ extern std::string apiKey;
 extern std::string API_ENDPOINT;
 
 const bool USE_TEST_PID = true;
-const int TEST_PID = 22168;
+const int TEST_PID = 22088;
 
 ProcessMonitor::~ProcessMonitor()
 {
@@ -20,6 +20,12 @@ bool ProcessMonitor::initialize()
 	isRunning = true;
 	//Create thread for managing tracked processes
 	managerThread = new std::thread(managerThreadExecute, this);
+	//Add self to excluded PIDs
+	ExcludedPID.push_back((int)GetCurrentProcessId);
+	//Add excluded process names
+	ExcludedProcessNames.push_back(std::string("explorer.exe"));
+	ExcludedProcessNames.push_back(std::string("TestConsoleApp.exe"));
+
 	return true;
 }
 
@@ -219,6 +225,40 @@ void ProcessMonitor::scanForProcesses()
 			//new Process and no collision with old PID
 			//Create TrackedProcess object
 			HANDLE process = OpenProcess(PROCESS_ALL_ACCESS, FALSE, processes[i]);
+
+			//Check that process is not on the exclusion list
+			bool excluded = false;
+			char imageName[MAX_PATH];
+			GetProcessImageFileNameA(process, imageName, MAX_PATH);
+			//Check for excluded image names
+			for (int j = 0; j < ExcludedProcessNames.size(); j++)
+			{
+				std::string imageNameString = std::string(imageName);
+				if (imageNameString.find(ExcludedProcessNames[j]) == std::string::npos)
+				{
+					//std::cout << "byname" << imageNameString << std::string(imageName);
+
+					excluded = true;
+					break;
+				}
+			}
+			//Check for excluded PID's
+			for (int j = 0; j < ExcludedPID.size(); j++)
+			{
+				if (ExcludedPID[j] == i)
+				{
+					//std::cout << "byPID\n";
+					excluded = true;
+					break;
+				}
+			}
+			
+			if (excluded == true)
+			{
+				CloseHandle(process);
+				continue;
+			}
+			
 			currentTrackedProcess = new TrackedProcess(process, processes[i]);
 			//currentTrackedProcess->printProcessInfo();
 			//Add to hashmap

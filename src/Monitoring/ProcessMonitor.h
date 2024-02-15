@@ -29,6 +29,8 @@ class ProcessMonitor
 
 		void printProcessList();
 
+		std::vector<std::string> ExcludedProcessNames;
+		std::vector<int> ExcludedPID;
 		void stop();
 
 		std::thread* managerThread;

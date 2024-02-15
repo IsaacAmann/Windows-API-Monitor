@@ -35,6 +35,10 @@ BOOL APIENTRY DllMain( HMODULE hModule,
         LPCWSTR fullString = temp.c_str();
         sharedMemoryHandle = OpenFileMappingW(FILE_MAP_ALL_ACCESS, FALSE, fullString);
         //Catch that sharedMemoryHandle not void, would cause a crash on attached process :(
+        if (sharedMemoryHandle == NULL)
+        {
+            return true;
+        }
         callCountContainer = (CallCountContainer*)MapViewOfFile(sharedMemoryHandle, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(CallCountContainer));
 
         //Hook API calls

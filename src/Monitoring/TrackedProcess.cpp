@@ -11,7 +11,6 @@ TrackedProcess::TrackedProcess(HANDLE processHandle, DWORD PID)
 	processRunning = true;
 	getProcessInfo();
 	//printProcessInfo();
-	int testPID = 1612;
 	
 	//Create shared memory to pass counts from tracked process
 	std::string pipeName = pipeBaseName;
