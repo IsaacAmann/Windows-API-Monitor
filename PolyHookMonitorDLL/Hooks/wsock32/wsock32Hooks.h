@@ -4,7 +4,7 @@
 #include "../Hooks.h"
 
 
-void hookwinsock32APICalls(std::unordered_map<std::string, APICallCounter*>* hooks);
+void hookwinsock32APICalls(std::unordered_map<std::string, APICallCounter*>* hooks, CallCountContainer* callCountContainer);
 
 SOCKET WSAAPI hooksocket(int af, int type, int protocol);
 

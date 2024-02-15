@@ -56,11 +56,11 @@ BOOL APIENTRY DllMain( HMODULE hModule,
         std::wstring temp = std::wstring(pipeName.begin(), pipeName.end());
         LPCWSTR fullString = temp.c_str();
         sharedMemoryHandle = OpenFileMappingW(FILE_MAP_ALL_ACCESS, FALSE, fullString);
+        //Catch that sharedMemoryHandle not void, would cause a crash on attached process :(
         callCountContainer = (CallCountContainer*)MapViewOfFile(sharedMemoryHandle, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(CallCountContainer));
 
-        callCountContainer->test = 4;
         //Hook API calls
-        //hookAPICalls();
+        hookAPICalls();
        
         //Start messenger thread
         //messengerThread = CreateThread(NULL, 0, MessengerThreadExecute, NULL, 0, NULL);
@@ -80,17 +80,18 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 void hookAPICalls()
 {
     //Hook Kernel32.dll functions
-    hookKernel32APICalls(&counterMap);
-    hookwinsock32APICalls(&counterMap);
-    hookwininetAPICalls(&counterMap);
-    hookadvapi32APICalls(&counterMap);
-    hookUser32APICalls(&counterMap);
+    hookKernel32APICalls(&counterMap, callCountContainer);
+    hookwinsock32APICalls(&counterMap, callCountContainer);
+    hookwininetAPICalls(&counterMap, callCountContainer);
+    hookadvapi32APICalls(&counterMap, callCountContainer);
+    hookUser32APICalls(&counterMap, callCountContainer);
 }
 
 DWORD WINAPI MessengerThreadExecute(LPVOID lpParam)
 {
     while (true)
     {
+        /*
         //Send update for all counters to monitor
         for (auto iterator : counterMap)
         {
@@ -112,7 +113,7 @@ DWORD WINAPI MessengerThreadExecute(LPVOID lpParam)
                 NULL
             );
         }
-
+        */
         //Wait before sending again
         Sleep(MESSENGER_SLEEP_TIME);
     }

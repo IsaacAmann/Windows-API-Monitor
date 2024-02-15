@@ -76,12 +76,12 @@ LSTATUS(__stdcall* origRegGetValueW)(HKEY hKey, LPCWSTR lpSubKey, LPCWSTR lpValu
 
 
 
-void hookadvapi32APICalls(std::unordered_map<std::string, APICallCounter*>* hooks)
+void hookadvapi32APICalls(std::unordered_map<std::string, APICallCounter*>* hooks, CallCountContainer* callCountContainer)
 {
 
 	APICallCounter* currentCounter = NULL;
 
-
+	/*
 	//Hooking using Microsoft Detours library
 	DetourTransactionBegin();
 	DetourRestoreAfterWith();
@@ -120,6 +120,8 @@ void hookadvapi32APICalls(std::unordered_map<std::string, APICallCounter*>* hook
 
 
 	DetourTransactionCommit();
+
+	*/
 }
 
 SC_HANDLE __stdcall hookOpenSCManagerA(LPCSTR lpMachineName, LPCSTR lpDatabaseName, DWORD dwDesiredAccess)

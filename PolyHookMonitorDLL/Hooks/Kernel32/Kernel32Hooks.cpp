@@ -64,7 +64,7 @@ BOOL(WINAPI* origCreateProcessW)(LPCWSTR lpApplicationName, LPWSTR lpCommandLine
 
 BOOL(WINAPI* origIsDebuggerPresent)() = IsDebuggerPresent;
 
-void hookKernel32APICalls(std::unordered_map<std::string, APICallCounter *> * hooks)
+void hookKernel32APICalls(std::unordered_map<std::string, APICallCounter *> * hooks, CallCountContainer* callCountContainer)
 {
     /*
     HMODULE kernel32 = LoadLibraryA("Kernel32.dll");
@@ -89,96 +89,95 @@ void hookKernel32APICalls(std::unordered_map<std::string, APICallCounter *> * ho
 
     //Hooking using Microsoft Detours library
     DetourTransactionBegin();
-    currentCounter = new APICallCounter("GetCurrentProcessId", hooks);
+    currentCounter = new APICallCounter("GetCurrentProcessId", hooks, &(callCountContainer->cGetCurrentProcessId));
     DetourRestoreAfterWith();
     DetourAttach(&origGetCurrentProcessId, hookGetCurrentProcessId);
 
-    currentCounter = new APICallCounter("OpenProcess", hooks);
+    
+
+    currentCounter = new APICallCounter("OpenProcess", hooks, &(callCountContainer->cOpenProcess));
     DetourAttach(&origOpenProcess, hookOpenProcess);
 
 
     //Hooking WriteFile, WriteFileEx (using 1 counter for both)
-    currentCounter = new APICallCounter("WriteFile", hooks);
+    currentCounter = new APICallCounter("WriteFile", hooks, &(callCountContainer->cWriteFile));
     //Probably not going to hook WriteFile, DLL uses write file to send updated count over named pipe
     //resulting in a stack over flow from it infinitely calling the hook function
-    /*
-    DetourTransactionBegin();
-    DetourUpdateThread(GetCurrentThread());
-    DetourAttach(&origWriteFile, hookWriteFile);
-    DetourTransactionCommit();
-    */
+    
     DetourAttach(&origWriteFileEx, hookWriteFileEx);
 
 
     //Hooking CreateFileA, CreateFileW (using 1 counter for both)
-    currentCounter = new APICallCounter("CreateFile", hooks);
+    currentCounter = new APICallCounter("CreateFile", hooks, &(callCountContainer->cCreateFile));
     DetourAttach(&origCreateFileA, hookCreateFileA);
    
     DetourAttach(&origCreateFileW, hookCreateFileW);
 
-    currentCounter = new APICallCounter("CreateFileMapping", hooks);
+    currentCounter = new APICallCounter("CreateFileMapping", hooks, &(callCountContainer->cCreateFileMapping));
     DetourAttach(&origCreateFileMappingA, hookCreateFileMappingA);
 
-    currentCounter = new APICallCounter("GetWindowsDirectory", hooks);
+    currentCounter = new APICallCounter("GetWindowsDirectory", hooks, &(callCountContainer->cGetWindowsDirectory));
     DetourAttach(&origGetWindowsDirectoryA, hookGetWindowsDirectoryA);
     DetourAttach(&origGetWindowsDirectoryW, hookGetWindowsDirectoryW);
 
-    currentCounter = new APICallCounter("SetFileTime", hooks);
+    currentCounter = new APICallCounter("SetFileTime", hooks, &(callCountContainer->cSetFileTime));
     DetourAttach(&origSetFileTime, hookSetFileTime);
 
-    currentCounter = new APICallCounter("VirtualAlloc", hooks);
+    currentCounter = new APICallCounter("VirtualAlloc", hooks, &(callCountContainer->cVirtualAlloc));
     DetourAttach(&origVirtualAlloc, hookVirtualAlloc);
 
-    currentCounter = new APICallCounter("VirtualAllocEx", hooks);
+    currentCounter = new APICallCounter("VirtualAllocEx", hooks, &(callCountContainer->cVirtualAllocEx));
     DetourAttach(&origVirtualAllocEx, hookVirtualAllocEx);
 
-    currentCounter = new APICallCounter("VirtualProtect", hooks);
+    currentCounter = new APICallCounter("VirtualProtect", hooks, &(callCountContainer->cVirtualProtect));
     DetourAttach(&origVirtualProtect, hookVirtualProtect);
 
-    currentCounter = new APICallCounter("ReadProcessMemory", hooks);
+    currentCounter = new APICallCounter("ReadProcessMemory", hooks, &(callCountContainer->cReadProcessMemory));
     DetourAttach(&origReadProcessMemory, hookReadProcessMemory);
 
-    currentCounter = new APICallCounter("WriteProcessMemory", hooks);
+    currentCounter = new APICallCounter("WriteProcessMemory", hooks, &(callCountContainer->cWriteProcessMemory));
     DetourAttach(&origWriteProcessMemory, hookWriteProcessMemory);
 
-    currentCounter = new APICallCounter("CreateRemoteThread", hooks);
+    currentCounter = new APICallCounter("CreateRemoteThread", hooks, &(callCountContainer->cCreateRemoteThread));
     DetourAttach(&origCreateRemoteThread, hookCreateRemoteThread);
 
-    currentCounter = new APICallCounter("QueueUserAPC", hooks);
+    currentCounter = new APICallCounter("QueueUserAPC", hooks, &(callCountContainer->cQueueUserAPC));
     DetourAttach(&origQueueUserAPC, hookQueueUserAPC);
 
-    currentCounter = new APICallCounter("ConnectNamedPipe", hooks);
+    currentCounter = new APICallCounter("ConnectNamedPipe", hooks, &(callCountContainer->cConnectNamedPipe));
     DetourAttach(&origConnectNamedPipe, hookConnectNamedPipe);
 
-    currentCounter = new APICallCounter("CreateNamedPipe", hooks);
+    currentCounter = new APICallCounter("CreateNamedPipe", hooks, &(callCountContainer->cCreateNamedPipe));
     DetourAttach(&origCreateNamedPipeA, hookCreateNamedPipeA);
 
-    currentCounter = new APICallCounter("EnumProcesses", hooks);
+    currentCounter = new APICallCounter("EnumProcesses", hooks, &(callCountContainer->cEnumProcesses));
     DetourAttach(&origEnumProcesses, hookEnumProcesses);
 
-    currentCounter = new APICallCounter("EnumProcessModules", hooks);
+    currentCounter = new APICallCounter("EnumProcessModules", hooks, &(callCountContainer->cEnumProcessModules));
     DetourAttach(&origEnumProcessModules, hookEnumProcessModules);
 
-    currentCounter = new APICallCounter("GetModuleFileName", hooks);
+    currentCounter = new APICallCounter("GetModuleFileName", hooks, &(callCountContainer->cGetModuleFileName));
     DetourAttach(&origGetModuleFileNameA, hookGetModuleFileNameA);
     DetourAttach(&origGetModuleFileNameW, hookGetModuleFileNameW);
 
-    currentCounter = new APICallCounter("GetModuleHandle", hooks);
+    currentCounter = new APICallCounter("GetModuleHandle", hooks, &(callCountContainer->cGetModuleHandle));
     DetourAttach(&origGetModuleHandleA, hookGetModuleHandleA);
     DetourAttach(&origGetModuleHandleW, hookGetModuleHandleW);
 
-    currentCounter = new APICallCounter("PeekNamedPipe", hooks);
+    currentCounter = new APICallCounter("PeekNamedPipe", hooks, &(callCountContainer->cPeekNamedPipe));
     DetourAttach(&origPeekNamedPipe, hookPeekNamedPipe);
 
-    currentCounter = new APICallCounter("TerminateProcess", hooks);
+    currentCounter = new APICallCounter("TerminateProcess", hooks, &(callCountContainer->cTerminateProcess));
     DetourAttach(&origTerminateProcess, hookTerminateProcess);
 
-    currentCounter = new APICallCounter("CreateProcess", hooks);
+    currentCounter = new APICallCounter("CreateProcess", hooks, &(callCountContainer->cCreateProcess));
     DetourAttach(&origCreateProcessA, hookCreateProcessA);
     DetourAttach(&origCreateProcessW, hookCreateProcessW);
 
-    currentCounter = new APICallCounter("IsDebuggerPresent", hooks);
+    currentCounter = new APICallCounter("IsDebuggerPresent", hooks, &(callCountContainer->cIsDebuggerPresent));
     DetourAttach(&origIsDebuggerPresent, hookIsDebuggerPresent);
+
+    
 
     DetourTransactionCommit();
 

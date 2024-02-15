@@ -2,7 +2,7 @@
 #include "../Hooks.h"
 
 
-void hookKernel32APICalls(std::unordered_map<std::string, APICallCounter *> * hooks);
+void hookKernel32APICalls(std::unordered_map<std::string, APICallCounter *> * hooks, CallCountContainer* callCountContainer);
 
 DWORD WINAPI hookGetCurrentProcessId();
 

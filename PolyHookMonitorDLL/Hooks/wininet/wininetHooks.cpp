@@ -15,9 +15,9 @@ BOOL(__stdcall* origInternetReadFileExW)(HINTERNET hFile, LPINTERNET_BUFFERSW lp
 
 BOOL(__stdcall* origInternetWriteFile)(HINTERNET hFile, LPCVOID lpBuffer, DWORD dwNumberOfBytesToWrite, LPDWORD lpdwNumberOfBytesWritten) = InternetWriteFile;
 
-void hookwininetAPICalls(std::unordered_map<std::string, APICallCounter*>* hooks)
+void hookwininetAPICalls(std::unordered_map<std::string, APICallCounter*>* hooks, CallCountContainer* callCountContainer)
 {
-
+	/*
     APICallCounter* currentCounter = NULL;
 
 
@@ -42,6 +42,7 @@ void hookwininetAPICalls(std::unordered_map<std::string, APICallCounter*>* hooks
 	DetourAttach(&origInternetWriteFile, hookInternetWriteFile);
 
     DetourTransactionCommit();
+	*/
 }
 
 HINTERNET __stdcall hookInternetOpenA(LPCSTR lpszAgent, DWORD dwAccessType, LPCSTR lpszProxy, LPCSTR lpszProxyBypass, DWORD dwFlags)

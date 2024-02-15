@@ -13,18 +13,18 @@ int(WSAAPI* origsend)(SOCKET s, const char* buf, int len, int flags) = send;
 int(__stdcall* origrecv)(SOCKET s, char* buf, int len, int flags) = recv;
 int(__stdcall* origgethostname)(char* name, int namelen) = gethostname;
 
-void hookwinsock32APICalls(std::unordered_map<std::string, APICallCounter*>* hooks)
+void hookwinsock32APICalls(std::unordered_map<std::string, APICallCounter*>* hooks, CallCountContainer* callCountContainer)
 {
 
     APICallCounter* currentCounter = NULL;
 
-
+    /*
     //Hooking using Microsoft Detours library
     DetourTransactionBegin();
-    currentCounter = new APICallCounter("socket", hooks);
+    currentCounter = new APICallCounter("socket", hooks, );
     DetourRestoreAfterWith();
     DetourAttach(&origsocket, hooksocket);
-
+    
     currentCounter = new APICallCounter("bind", hooks);
     DetourAttach(&origbind, hookbind);
 
@@ -46,9 +46,10 @@ void hookwinsock32APICalls(std::unordered_map<std::string, APICallCounter*>* hoo
     currentCounter = new APICallCounter("gethostname", hooks);
     DetourAttach(&origgethostname, hookgethostname);
 
-
+   
 
     DetourTransactionCommit();
+     */
 }
 
 SOCKET WSAAPI hooksocket(int af, int type, int protocol)

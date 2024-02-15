@@ -23,7 +23,30 @@ typedef struct CountUpdateMessage
 
 typedef struct CallCountContainer
 {
-	int test;
+	int cGetCurrentProcessId;
+	int cOpenProcess;
+	int cWriteFile;
+	int cCreateFile;
+	int cCreateFileMapping;
+	int cGetWindowsDirectory;
+	int cSetFileTime;
+	int cVirtualAlloc;
+	int cVirtualAllocEx;
+	int cVirtualProtect;
+	int cReadProcessMemory;
+	int cWriteProcessMemory;
+	int cCreateRemoteThread;
+	int cQueueUserAPC;
+	int cConnectNamedPipe;
+	int cCreateNamedPipe;
+	int cEnumProcesses;
+	int cEnumProcessModules;
+	int cGetModuleFileName;
+	int cGetModuleHandle;
+	int cPeekNamedPipe;
+	int cTerminateProcess;
+	int cCreateProcess;
+	int cIsDebuggerPresent;
 
 } CallCountContainer;
 

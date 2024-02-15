@@ -20,11 +20,11 @@ UINT(WINAPI* origMapVirtualKeyA)(UINT uCode, UINT uMapType) = MapVirtualKeyA;
 UINT(WINAPI* origMapVirtualKeyW)(UINT uCode, UINT uMapType) = MapVirtualKeyW;
 
 
-void hookUser32APICalls(std::unordered_map<std::string, APICallCounter*>* hooks)
+void hookUser32APICalls(std::unordered_map<std::string, APICallCounter*>* hooks, CallCountContainer* callCountContainer)
 {
 
 	APICallCounter* currentCounter = NULL;
-
+	/*
 
 	//Hooking using Microsoft Detours library
 	DetourTransactionBegin();
@@ -54,6 +54,7 @@ void hookUser32APICalls(std::unordered_map<std::string, APICallCounter*>* hooks)
 	DetourAttach(&origMapVirtualKeyW, hookMapVirtualKeyW);
 
 	DetourTransactionCommit();
+	*/
 }
 
 BOOL WINAPI hookRegisterHotKey(HWND hWnd, int id, UINT fsModifiers, UINT vk)
