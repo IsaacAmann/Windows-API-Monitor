@@ -6,7 +6,7 @@ extern std::string clientId;
 extern std::string apiKey;
 extern std::string API_ENDPOINT;
 
-const bool USE_TEST_PID = true;
+const bool USE_TEST_PID = false;
 const int TEST_PID = 21484;
 
 ProcessMonitor::~ProcessMonitor()
@@ -21,9 +21,12 @@ bool ProcessMonitor::initialize()
 	//Create thread for managing tracked processes
 	managerThread = new std::thread(managerThreadExecute, this);
 	//Add self to excluded PIDs
-	ExcludedPID.push_back((int)GetCurrentProcessId);
+	ExcludedPID.push_back((int)GetCurrentProcessId());
 	//Add excluded process names
 	ExcludedProcessNames.push_back(std::string("explorer.exe"));
+	ExcludedProcessNames.push_back(std::string("devenv.exe"));
+	ExcludedProcessNames.push_back(std::string("dropbox.exe"));
+
 	//ExcludedProcessNames.push_back(std::string("TestConsoleApp.exe"));
 
 	return true;
@@ -253,9 +256,9 @@ void ProcessMonitor::scanForProcesses()
 			//Check for excluded PID's
 			for (int j = 0; j < ExcludedPID.size(); j++)
 			{
-				if (ExcludedPID[j] == i)
+				if (ExcludedPID[j] == processes[i])
 				{
-					std::cout << "byPID\n";
+					//std::cout << "byPID\n";
 					excluded = true;
 					break;
 				}
