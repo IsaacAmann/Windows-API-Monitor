@@ -3,7 +3,7 @@
 #include "../Hooks.h"
 #include <wininet.h>
 
-void hookwininetAPICalls(std::unordered_map<std::string, APICallCounter*>* hooks);
+void hookwininetAPICalls(std::unordered_map<std::string, APICallCounter*>* hooks, CallCountContainer* callCountContainer);
 
 
 HINTERNET __stdcall hookInternetOpenA(LPCSTR lpszAgent, DWORD dwAccessType, LPCSTR lpszProxy, LPCSTR lpszProxyBypass, DWORD dwFlags);

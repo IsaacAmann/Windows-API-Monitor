@@ -15,9 +15,9 @@ BOOL(__stdcall* origInternetReadFileExW)(HINTERNET hFile, LPINTERNET_BUFFERSW lp
 
 BOOL(__stdcall* origInternetWriteFile)(HINTERNET hFile, LPCVOID lpBuffer, DWORD dwNumberOfBytesToWrite, LPDWORD lpdwNumberOfBytesWritten) = InternetWriteFile;
 
-void hookwininetAPICalls(std::unordered_map<std::string, APICallCounter*>* hooks)
+void hookwininetAPICalls(std::unordered_map<std::string, APICallCounter*>* hooks, CallCountContainer* callCountContainer)
 {
-
+	
     APICallCounter* currentCounter = NULL;
 
 
@@ -25,23 +25,24 @@ void hookwininetAPICalls(std::unordered_map<std::string, APICallCounter*>* hooks
     DetourTransactionBegin();
 	DetourRestoreAfterWith();
 
-    currentCounter = new APICallCounter("InternetOpen", hooks);
+    currentCounter = new APICallCounter("InternetOpen", hooks, &(callCountContainer->cInternetOpen));
     DetourAttach(&origInternetOpenA, hookInternetOpenA);
 	DetourAttach(&origInternetOpenW, hookInternetOpenW);
 
-	currentCounter = new APICallCounter("InternetOpenUrl", hooks);
+	currentCounter = new APICallCounter("InternetOpenUrl", hooks, &(callCountContainer->cInternetOpenUrl));
 	DetourAttach(&origInternetOpenUrlA, hookInternetOpenUrlA);
 	DetourAttach(&origInternetOpenUrlW, hookInternetOpenUrlW);
 
-	currentCounter = new APICallCounter("InternetReadFile", hooks);
+	currentCounter = new APICallCounter("InternetReadFile", hooks, &(callCountContainer->cInternetReadFile));
 	DetourAttach(&origInternetReadFile, hookInternetReadFile);
 	DetourAttach(&origInternetReadFileExA, hookInternetReadFileExA);
 	DetourAttach(&origInternetReadFileExW, hookInternetReadFileExW);
 
-	currentCounter = new APICallCounter("InternetWriteFile", hooks);
+	currentCounter = new APICallCounter("InternetWriteFile", hooks, &(callCountContainer->cInternetWriteFile));
 	DetourAttach(&origInternetWriteFile, hookInternetWriteFile);
 
     DetourTransactionCommit();
+	
 }
 
 HINTERNET __stdcall hookInternetOpenA(LPCSTR lpszAgent, DWORD dwAccessType, LPCSTR lpszProxy, LPCSTR lpszProxyBypass, DWORD dwFlags)

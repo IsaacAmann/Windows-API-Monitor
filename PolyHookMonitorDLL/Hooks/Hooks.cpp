@@ -27,10 +27,11 @@ APICallCounter::APICallCounter(PLH::IatHook* hook, std::string callName, std::un
 }
 */
 
-APICallCounter::APICallCounter(std::string callName, std::unordered_map<std::string, APICallCounter*>* hooks)
+APICallCounter::APICallCounter(std::string callName, std::unordered_map<std::string, APICallCounter*>* hooks, int* numberCalls)
 {
 	this->callName = callName;
-	this->numberCalls = 0;
+	this->numberCalls = numberCalls;
+	*numberCalls = 0;
 
 	//Push self to hashmap
 	hooks->insert(std::make_pair(callName, this));
@@ -39,7 +40,7 @@ APICallCounter::APICallCounter(std::string callName, std::unordered_map<std::str
 
 void APICallCounter::incrementCall()
 {
-	numberCalls++;
+	*numberCalls = (*numberCalls) + 1;
 	/*
 	//send message
     CountUpdateMessage message;

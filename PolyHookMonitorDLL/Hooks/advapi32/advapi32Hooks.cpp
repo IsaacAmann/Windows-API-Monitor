@@ -76,50 +76,52 @@ LSTATUS(__stdcall* origRegGetValueW)(HKEY hKey, LPCWSTR lpSubKey, LPCWSTR lpValu
 
 
 
-void hookadvapi32APICalls(std::unordered_map<std::string, APICallCounter*>* hooks)
+void hookadvapi32APICalls(std::unordered_map<std::string, APICallCounter*>* hooks, CallCountContainer* callCountContainer)
 {
 
 	APICallCounter* currentCounter = NULL;
 
-
+	
 	//Hooking using Microsoft Detours library
 	DetourTransactionBegin();
 	DetourRestoreAfterWith();
 
-	currentCounter = new APICallCounter("OpenSCManager", hooks);
+	currentCounter = new APICallCounter("OpenSCManager", hooks, &(callCountContainer->cOpenSCManager));
 	DetourAttach(&origOpenSCManagerA, hookOpenSCManagerA);
 	DetourAttach(&origOpenSCManagerW, hookOpenSCManagerW);
 
-	currentCounter = new APICallCounter("CreateService", hooks);
+	currentCounter = new APICallCounter("CreateService", hooks, &(callCountContainer->cCreateService));
 	DetourAttach(&origCreateServiceA, hookCreateServiceA);
 	DetourAttach(&origCreateServiceW, hookCreateServiceW);
 
-	currentCounter = new APICallCounter("StartServiceCtrlDispatcher", hooks);
+	currentCounter = new APICallCounter("StartServiceCtrlDispatcher", hooks, &(callCountContainer->cStartServiceCtrlDispatcher));
 	DetourAttach(&origStartServiceCtrlDispatcherA, hookStartServiceCtrlDispatcherA);
 	DetourAttach(&origStartServiceCtrlDispatcherW, hookStartServiceCtrlDispatcherW);
 
-	currentCounter = new APICallCounter("RegCreateKey", hooks);
+	currentCounter = new APICallCounter("RegCreateKey", hooks, &(callCountContainer->cRegCreateKey));
 	DetourAttach(&origRegCreateKeyExA, hookRegCreateKeyExA);
 	DetourAttach(&origRegCreateKeyExW, hookRegCreateKeyExW);
 
-	currentCounter = new APICallCounter("RegOpenKey", hooks);
+	currentCounter = new APICallCounter("RegOpenKey", hooks, &(callCountContainer->cRegOpenKey));
 	DetourAttach(&origRegOpenKeyExA, hookRegOpenKeyExA);
 	DetourAttach(&origRegOpenKeyExW, hookRegOpenKeyExW);
 
-	currentCounter = new APICallCounter("RegSetValue", hooks);
+	currentCounter = new APICallCounter("RegSetValue", hooks, &(callCountContainer->cRegSetValue));
 	DetourAttach(&origRegSetValueExA, hookRegSetValueExA);
 	DetourAttach(&origRegSetValueExW, hookRegSetValueExW);
 
-	currentCounter = new APICallCounter("RegDeleteKey", hooks);
+	currentCounter = new APICallCounter("RegDeleteKey", hooks, &(callCountContainer->cRegDeleteKey));
 	DetourAttach(&origRegDeleteKeyExA, hookRegDeleteKeyExA);
 	DetourAttach(&origRegDeleteKeyExW, hookRegDeleteKeyExW);
 
-	currentCounter = new APICallCounter("RegGetValue", hooks);
+	currentCounter = new APICallCounter("RegGetValue", hooks, &(callCountContainer->cRegGetValue));
 	DetourAttach(&origRegGetValueA, hookRegGetValueA);
 	DetourAttach(&origRegGetValueW, hookRegGetValueW);
 
 
 	DetourTransactionCommit();
+
+	
 }
 
 SC_HANDLE __stdcall hookOpenSCManagerA(LPCSTR lpMachineName, LPCSTR lpDatabaseName, DWORD dwDesiredAccess)

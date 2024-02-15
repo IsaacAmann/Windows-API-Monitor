@@ -37,11 +37,11 @@ class APICallCounter
 
 	*/
 	public:
-		APICallCounter(std::string callName, std::unordered_map<std::string, APICallCounter*>* hooks);
+		APICallCounter(std::string callName, std::unordered_map<std::string, APICallCounter*>* hooks, int* numberCalls);
 		
 		std::string callName;
 		void incrementCall();
-		int numberCalls;
+		int* numberCalls;
 };
 
 extern std::unordered_map<std::string, APICallCounter*> counterMap;
