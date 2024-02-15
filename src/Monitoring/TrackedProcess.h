@@ -57,6 +57,28 @@ typedef struct CallCountContainer
 	int csend;
 	int crecv;
 	int cgethostname;
+	//wininet
+	int cInternetOpen;
+	int cInternetOpenUrl;
+	int cInternetReadFile;
+	int cInternetWriteFile;
+	//advapi32
+	int cOpenSCManager; 
+	int cCreateService;
+	int cStartServiceCtrlDispatcher;
+	int cRegCreateKey;
+	int cRegOpenKey;
+	int cRegSetValue;
+	int cRegDeleteKey;
+	int cRegGetValue;
+	//user32
+	int cRegisterHotKey;
+	int cGetAsyncKeyState;
+	int cSetWindowsHookEx;
+	int cGetForegroundWindow;
+	int cGetDC;
+	int cGetKeyState;
+	int cMapVirtualKey;
 
 } CallCountContainer;
 

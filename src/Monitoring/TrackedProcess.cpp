@@ -57,7 +57,7 @@ TrackedProcess::~TrackedProcess()
 
 void TrackedProcess::readCountUpdateQueue()
 {
-	std::cout << callCountContainer->GetCurrentProcessId << std::endl;
+	std::cout << callCountContainer->cGetCurrentProcessId << std::endl;
 	/*
 	BOOL readSuccess = FALSE;
 	CountUpdateMessage currentMessage;

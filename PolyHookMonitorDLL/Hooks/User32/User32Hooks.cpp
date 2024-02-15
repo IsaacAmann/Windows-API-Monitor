@@ -24,37 +24,35 @@ void hookUser32APICalls(std::unordered_map<std::string, APICallCounter*>* hooks,
 {
 
 	APICallCounter* currentCounter = NULL;
-	/*
 
 	//Hooking using Microsoft Detours library
 	DetourTransactionBegin();
 	DetourRestoreAfterWith();
 
-	currentCounter = new APICallCounter("RegisterHotKey", hooks);
+	currentCounter = new APICallCounter("RegisterHotKey", hooks, &(callCountContainer->cRegisterHotKey));
 	DetourAttach(&origRegisterHotKey, hookRegisterHotKey);
 
-	currentCounter = new APICallCounter("GetAsyncKeyState", hooks);
+	currentCounter = new APICallCounter("GetAsyncKeyState", hooks, &(callCountContainer->cGetAsyncKeyState));
 	DetourAttach(&origGetAsyncKeyState, hookGetAsyncKeyState);
 
-	currentCounter = new APICallCounter("SetWindowsHookEx", hooks);
+	currentCounter = new APICallCounter("SetWindowsHookEx", hooks, &(callCountContainer->cSetWindowsHookEx));
 	DetourAttach(&origSetWindowsHookExA, hookSetWindowsHookExA);
 	DetourAttach(&origSetWindowsHookExW, hookSetWindowsHookExW);
 
-	currentCounter = new APICallCounter("GetForegroundWindow", hooks);
+	currentCounter = new APICallCounter("GetForegroundWindow", hooks, &(callCountContainer->cGetForegroundWindow));
 	DetourAttach(&origGetForegroundWindow, hookGetForegroundWindow);
 
-	currentCounter = new APICallCounter("GetDC", hooks);
+	currentCounter = new APICallCounter("GetDC", hooks, &(callCountContainer->cGetDC));
 	DetourAttach(&origGetDC, hookGetDC);
 
-	currentCounter = new APICallCounter("GetKeyState", hooks);
+	currentCounter = new APICallCounter("GetKeyState", hooks, &(callCountContainer->cGetKeyState));
 	DetourAttach(&origGetKeyState, hookGetKeyState);
 
-	currentCounter = new APICallCounter("MapVirtualKey", hooks);
+	currentCounter = new APICallCounter("MapVirtualKey", hooks, &(callCountContainer->cMapVirtualKey));
 	DetourAttach(&origMapVirtualKeyA, hookMapVirtualKeyA);
 	DetourAttach(&origMapVirtualKeyW, hookMapVirtualKeyW);
 
 	DetourTransactionCommit();
-	*/
 }
 
 BOOL WINAPI hookRegisterHotKey(HWND hWnd, int id, UINT fsModifiers, UINT vk)
