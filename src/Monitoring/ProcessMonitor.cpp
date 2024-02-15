@@ -7,7 +7,7 @@ extern std::string apiKey;
 extern std::string API_ENDPOINT;
 
 const bool USE_TEST_PID = true;
-const int TEST_PID = 17316;
+const int TEST_PID = 22168;
 
 ProcessMonitor::~ProcessMonitor()
 {
@@ -91,7 +91,6 @@ void sendDataPoint(TrackedProcess* process)
 		
 		std::cout << "Posting datapoint \n";
 
-
 		json payload;
 
 		//Set clientId and apiKey for json
@@ -99,15 +98,6 @@ void sendDataPoint(TrackedProcess* process)
 		payload["token"] = apiKey;
 
 		//Add each Win32 API call count to json
-		/*
-		for (auto iterator : process->callCounters)
-		{
-			CountUpdateMessage currentCounter =  iterator.second;
-			
-			payload["WinAPICounts"][currentCounter.callName] = currentCounter.calls;
-			std::cout << "Adding call counter" << std::endl;
-		}
-		*/
 		//Kernel32
 		payload["WinAPICounts"]["GetCurrentProcessId"] = process->callCountContainer->cGetCurrentProcessId;
 		payload["WinAPICounts"]["OpenProcess"] = process->callCountContainer->cOpenProcess;

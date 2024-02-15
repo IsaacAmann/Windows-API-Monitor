@@ -35,11 +35,13 @@ TrackedProcess::~TrackedProcess()
 {
 	//Close process Handle
 	CloseHandle(processHandle);
+	//Close shared memory
+	CloseHandle(pipeHandle);
 }
 
 void TrackedProcess::readCountUpdateQueue()
 {
-	std::cout << callCountContainer->cGetCurrentProcessId << std::endl;
+	//std::cout << callCountContainer->cGetCurrentProcessId << std::endl;
 
 }
 
