@@ -1,9 +1,6 @@
 #include "TrackedProcess.h"
 
-const int PIPE_BUFFER_SIZE = 1000;
-
-//Base name for named pipe, should be appended with PID for the process
-//That will be sending data on the pipe
+//Base name for shared memory, should be appended with PID for the process
 std::string pipeBaseName = "Local\\APIMonitor";
 char libPath[_MAX_PATH] = "C:\\Users\\isaac\\Documents\\programming\\Windows-API-Monitor\\x64\\Debug\\PolyHookMonitorDLL.dll";
 //char libPath[_MAX_PATH] = "C:\\Users\\isaac\\Documents\\programming\\Windows-API-Monitor\\x64\\Debug\\MonitorDLL.dll";
@@ -15,22 +12,7 @@ TrackedProcess::TrackedProcess(HANDLE processHandle, DWORD PID)
 	getProcessInfo();
 	//printProcessInfo();
 	int testPID = 1612;
-	/*
-	//Create named pipe for receiving API call totals
-	std::string pipeName = pipeBaseName;
-	pipeName.append(std::to_string(PID));
-	std::cout << pipeName << std::endl;
-	pipeHandle = CreateNamedPipeA(
-		pipeName.c_str(),
-		PIPE_ACCESS_INBOUND,
-		PIPE_TYPE_BYTE | PIPE_NOWAIT,
-		1,
-		0,
-		PIPE_BUFFER_SIZE * sizeof(CountUpdateMessage),
-		0,
-		NULL
-	);
-	*/
+	
 	//Create shared memory to pass counts from tracked process
 	std::string pipeName = pipeBaseName;
 	pipeName.append(std::to_string(PID));
@@ -58,49 +40,7 @@ TrackedProcess::~TrackedProcess()
 void TrackedProcess::readCountUpdateQueue()
 {
 	std::cout << callCountContainer->cGetCurrentProcessId << std::endl;
-	/*
-	BOOL readSuccess = FALSE;
-	CountUpdateMessage currentMessage;
-	DWORD bytesRead = 0;
 
-	readSuccess = ReadFile(
-		pipeHandle,
-		&currentMessage,
-		sizeof(CountUpdateMessage),
-		&bytesRead,
-		NULL
-	);
-	//std::cout << "reading\n";
-	while (readSuccess == TRUE && bytesRead != 0)
-	{
-		//Process message
-		std::cout << "PID: " << PID << std::endl;
-		std::cout << "\tAPI Call: " << currentMessage.callName << std::endl;
-		std::cout << "\tTotal Calls: " << currentMessage.calls << std::endl;
-		//Update count
-		//Check for existing counter
-		auto iterator = callCounters.find(currentMessage.callName);
-		if (iterator == callCounters.end())
-		{
-			//First call to this API call, need to create counter
-			callCounters.insert(std::make_pair(currentMessage.callName, currentMessage));
-		}
-		else
-		{
-			//Counter exists, update it
-			callCounters.at(currentMessage.callName).calls = currentMessage.calls;
-		}
-
-		//Get next message in queue
-		readSuccess = ReadFile(
-			pipeHandle,
-			&currentMessage,
-			sizeof(CountUpdateMessage),
-			&bytesRead,
-			NULL
-		);
-	}
-	*/
 }
 
 //Load dll into process
@@ -122,7 +62,6 @@ void TrackedProcess::attach()
 	//Probably don't need to wait
 	//WaitForSingleObject(threadHandle, 1000);
 
-	//ConnectNamedPipe(pipeHandle, NULL);
 	std::cout << "attached!\n";
 }
 

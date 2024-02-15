@@ -14,13 +14,6 @@
 #include <unordered_map>
 
 
-typedef struct CountUpdateMessage
-{
-	char callName[60];
-	int calls;
-
-} CountUpdateMessage;
-
 typedef struct CallCountContainer
 {
 	//Kernel32
@@ -87,7 +80,6 @@ class TrackedProcess
 	public:
 		TrackedProcess(HANDLE processHandle, DWORD PID);
 		~TrackedProcess();
-		std::unordered_map<std::string, CountUpdateMessage> callCounters;
 		bool processRunning;
 		TCHAR processName[MAX_PATH];
 		TCHAR processExecutablePath[MAX_PATH];

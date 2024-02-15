@@ -99,6 +99,7 @@ void sendDataPoint(TrackedProcess* process)
 		payload["token"] = apiKey;
 
 		//Add each Win32 API call count to json
+		/*
 		for (auto iterator : process->callCounters)
 		{
 			CountUpdateMessage currentCounter =  iterator.second;
@@ -106,6 +107,64 @@ void sendDataPoint(TrackedProcess* process)
 			payload["WinAPICounts"][currentCounter.callName] = currentCounter.calls;
 			std::cout << "Adding call counter" << std::endl;
 		}
+		*/
+		//Kernel32
+		payload["WinAPICounts"]["GetCurrentProcessId"] = process->callCountContainer->cGetCurrentProcessId;
+		payload["WinAPICounts"]["OpenProcess"] = process->callCountContainer->cOpenProcess;
+		payload["WinAPICounts"]["WriteFile"] = process->callCountContainer->cWriteFile;
+		payload["WinAPICounts"]["CreateFile"] = process->callCountContainer->cCreateFile;
+		payload["WinAPICounts"]["CreateFileMapping"] = process->callCountContainer->cCreateFileMapping;
+		payload["WinAPICounts"]["GetWindowsDirectory"] = process->callCountContainer->cGetWindowsDirectory;
+		payload["WinAPICounts"]["SetFileTime"] = process->callCountContainer->cSetFileTime;
+		payload["WinAPICounts"]["VirtualAlloc"] = process->callCountContainer->cVirtualAlloc;
+		payload["WinAPICounts"]["VirtualAllocEx"] = process->callCountContainer->cVirtualAllocEx;
+		payload["WinAPICounts"]["VirtualProtect"] = process->callCountContainer->cVirtualProtect;
+		payload["WinAPICounts"]["ReadProcessMemory"] = process->callCountContainer->cReadProcessMemory;
+		payload["WinAPICounts"]["WriteProcessMemory"] = process->callCountContainer->cWriteProcessMemory;
+		payload["WinAPICounts"]["CreateRemoteThread"] = process->callCountContainer->cCreateRemoteThread;
+		payload["WinAPICounts"]["QueueUserAPC"] = process->callCountContainer->cQueueUserAPC;
+		payload["WinAPICounts"]["ConnectNamedPipe"] = process->callCountContainer->cConnectNamedPipe;
+		payload["WinAPICounts"]["CreateNamedPipe"] = process->callCountContainer->cCreateNamedPipe;
+		payload["WinAPICounts"]["EnumProcesses"] = process->callCountContainer->cEnumProcesses;
+		payload["WinAPICounts"]["EnumProcessModules"] = process->callCountContainer->cEnumProcessModules;
+		payload["WinAPICounts"]["GetModuleFileName"] = process->callCountContainer->cGetModuleFileName;
+		payload["WinAPICounts"]["GetModuleHandle"] = process->callCountContainer->cGetModuleHandle;
+		payload["WinAPICounts"]["PeekNamedPipe"] = process->callCountContainer->cPeekNamedPipe;
+		payload["WinAPICounts"]["TerminateProcess"] = process->callCountContainer->cTerminateProcess;
+		payload["WinAPICounts"]["CreateProcess"] = process->callCountContainer->cCreateProcess;
+		payload["WinAPICounts"]["IsDebuggerPresent"] = process->callCountContainer->cIsDebuggerPresent;
+		//wsock32
+		payload["WinAPICounts"]["socket"] = process->callCountContainer->csocket;
+		payload["WinAPICounts"]["bind"] = process->callCountContainer->cbind;
+		payload["WinAPICounts"]["listen"] = process->callCountContainer->clisten;
+		payload["WinAPICounts"]["accept"] = process->callCountContainer->caccept;
+		payload["WinAPICounts"]["connect"] = process->callCountContainer->cconnect;
+		payload["WinAPICounts"]["send"] = process->callCountContainer->csend;
+		payload["WinAPICounts"]["recv"] = process->callCountContainer->crecv;
+		payload["WinAPICounts"]["gethostname"] = process->callCountContainer->cgethostname;
+		//wininet
+		payload["WinAPICounts"]["InternetOpen"] = process->callCountContainer->cInternetOpen;
+		payload["WinAPICounts"]["InternetOpenUrl"] = process->callCountContainer->cInternetOpenUrl;
+		payload["WinAPICounts"]["InternetReadFile"] = process->callCountContainer->cInternetReadFile;
+		payload["WinAPICounts"]["InternetWriteFile"] = process->callCountContainer->cInternetWriteFile;
+		//advapi32
+		payload["WinAPICounts"]["OpenSCManager"] = process->callCountContainer->cOpenSCManager;
+		payload["WinAPICounts"]["CreateService"] = process->callCountContainer->cCreateService;
+		payload["WinAPICounts"]["StartServiceCtrlDispatcher"] = process->callCountContainer->cStartServiceCtrlDispatcher;
+		payload["WinAPICounts"]["RegCreateKey"] = process->callCountContainer->cRegCreateKey;
+		payload["WinAPICounts"]["RegOpenKey"] = process->callCountContainer->cRegOpenKey;
+		payload["WinAPICounts"]["RegSetValue"] = process->callCountContainer->cRegSetValue;
+		payload["WinAPICounts"]["RegDeleteKey"] = process->callCountContainer->cRegDeleteKey;
+		payload["WinAPICounts"]["RegGetValue"] = process->callCountContainer->cRegGetValue;
+		//user32
+		payload["WinAPICounts"]["RegisterHotKey"] = process->callCountContainer->cRegisterHotKey;
+		payload["WinAPICounts"]["GetAsyncKeyState"] = process->callCountContainer->cGetAsyncKeyState;
+		payload["WinAPICounts"]["SetWindowsHookEx"] = process->callCountContainer->cSetWindowsHookEx;
+		payload["WinAPICounts"]["GetForegroundWindow"] = process->callCountContainer->cGetForegroundWindow;
+		payload["WinAPICounts"]["GetDC"] = process->callCountContainer->cGetDC;
+		payload["WinAPICounts"]["GetKeyState"] = process->callCountContainer->cGetKeyState;
+		payload["WinAPICounts"]["MapVirtualKey"] = process->callCountContainer->cMapVirtualKey;
+
 		std::cout << payload.dump() << std::endl;
 		curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, payload.dump().c_str());
 

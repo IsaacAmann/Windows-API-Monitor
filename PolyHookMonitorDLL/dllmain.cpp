@@ -26,29 +26,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     case DLL_PROCESS_ATTACH:
     {
         std::cout << "Attach\n";
-        /*
-        //Connect to named pipe
-        std::string pipeName = pipeBaseName;
-        pipeName.append(std::to_string(GetCurrentProcessId()));
-        std::cout << pipeName << std::endl;
-        std::wstring temp = std::wstring(pipeName.begin(), pipeName.end());
-        LPCWSTR fullString = temp.c_str();
-        printf("%ls\n", fullString);
-        do
-        {
-            pipeHandle = CreateFile(
-                fullString,
-                GENERIC_WRITE,
-                0,
-                NULL,
-                OPEN_EXISTING,
-                0,
-                NULL
-            );
-            std::cout << "trying to connect" << std::endl;
-        } while (pipeHandle == INVALID_HANDLE_VALUE);
-        */
-
+     
         //Open shared memory from monitor process
         std::string pipeName = pipeBaseName;
         pipeName.append(std::to_string(GetCurrentProcessId()));
@@ -62,8 +40,6 @@ BOOL APIENTRY DllMain( HMODULE hModule,
         //Hook API calls
         hookAPICalls();
        
-        //Start messenger thread
-        //messengerThread = CreateThread(NULL, 0, MessengerThreadExecute, NULL, 0, NULL);
     }
         break;
     case DLL_THREAD_ATTACH:
@@ -87,34 +63,3 @@ void hookAPICalls()
     hookUser32APICalls(&counterMap, callCountContainer);
 }
 
-DWORD WINAPI MessengerThreadExecute(LPVOID lpParam)
-{
-    while (true)
-    {
-        /*
-        //Send update for all counters to monitor
-        for (auto iterator : counterMap)
-        {
-            APICallCounter* currentCounter = iterator.second;
-            //Create message
-            CountUpdateMessage message;
-            message.calls = currentCounter->numberCalls;
-            //Copy API call name
-            memcpy(message.callName, currentCounter->callName.c_str(), currentCounter->callName.length());
-            //Add null byte to the end
-            message.callName[currentCounter->callName.length()] = '\0';
-
-            //Send messenge over named pipe
-            WriteFile(
-                pipeHandle,
-                &message,
-                sizeof(CountUpdateMessage),
-                NULL,
-                NULL
-            );
-        }
-        */
-        //Wait before sending again
-        Sleep(MESSENGER_SLEEP_TIME);
-    }
-}
