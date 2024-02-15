@@ -4,7 +4,7 @@ const int PIPE_BUFFER_SIZE = 1000;
 
 //Base name for named pipe, should be appended with PID for the process
 //That will be sending data on the pipe
-std::string pipeBaseName = "\\\\.\\pipe\\APIMonitor";
+std::string pipeBaseName = "Local\\APIMonitor";
 char libPath[_MAX_PATH] = "C:\\Users\\isaac\\Documents\\programming\\Windows-API-Monitor\\x64\\Debug\\PolyHookMonitorDLL.dll";
 //char libPath[_MAX_PATH] = "C:\\Users\\isaac\\Documents\\programming\\Windows-API-Monitor\\x64\\Debug\\MonitorDLL.dll";
 TrackedProcess::TrackedProcess(HANDLE processHandle, DWORD PID)
@@ -14,8 +14,8 @@ TrackedProcess::TrackedProcess(HANDLE processHandle, DWORD PID)
 	processRunning = true;
 	getProcessInfo();
 	//printProcessInfo();
-	int testPID = 17356;
-
+	int testPID = 1612;
+	/*
 	//Create named pipe for receiving API call totals
 	std::string pipeName = pipeBaseName;
 	pipeName.append(std::to_string(PID));
@@ -30,6 +30,17 @@ TrackedProcess::TrackedProcess(HANDLE processHandle, DWORD PID)
 		0,
 		NULL
 	);
+	*/
+	//Create shared memory to pass counts from tracked process
+	std::string pipeName = pipeBaseName;
+	pipeName.append(std::to_string(PID));
+	std::cout << pipeName << std::endl;
+	pipeHandle = CreateFileMappingA(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(CallCountContainer), pipeName.c_str());
+	if (pipeHandle == NULL)
+	{
+		_tprintf(TEXT("Could not create file mapping (%d)\n"), GetLastError());
+	}
+	callCountContainer = (CallCountContainer*)MapViewOfFile(pipeHandle, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(CallCountContainer));
 
 	attach();
 	//std::cout << libPath << std::endl;
@@ -46,6 +57,8 @@ TrackedProcess::~TrackedProcess()
 
 void TrackedProcess::readCountUpdateQueue()
 {
+	std::cout << callCountContainer->test << std::endl;
+	/*
 	BOOL readSuccess = FALSE;
 	CountUpdateMessage currentMessage;
 	DWORD bytesRead = 0;
@@ -87,6 +100,7 @@ void TrackedProcess::readCountUpdateQueue()
 			NULL
 		);
 	}
+	*/
 }
 
 //Load dll into process

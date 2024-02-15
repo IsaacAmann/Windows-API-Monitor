@@ -21,6 +21,12 @@ typedef struct CountUpdateMessage
 
 } CountUpdateMessage;
 
+typedef struct CallCountContainer
+{
+	int test;
+
+} CallCountContainer;
+
 class TrackedProcess
 {
 	public:
@@ -32,6 +38,9 @@ class TrackedProcess
 		TCHAR processExecutablePath[MAX_PATH];
 		HANDLE processHandle;
 		HANDLE pipeHandle;
+		CallCountContainer* callCountContainer;
+
+
 		DWORD PID;
 		void printProcessInfo();
 		void readCountUpdateQueue();

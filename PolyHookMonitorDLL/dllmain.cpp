@@ -8,10 +8,13 @@ const DWORD MESSENGER_SLEEP_TIME = 10000;
 //std::vector<PLH::NatDetour*> hooks;
 //std::vector<PLH::IatHook*> hooks;
 std::unordered_map<std::string, APICallCounter *> counterMap;
-std::string pipeBaseName = "\\\\.\\pipe\\APIMonitor";
+std::string pipeBaseName = "Local\\APIMonitor";
 
 HANDLE pipeHandle; 
 HANDLE messengerThread;
+
+HANDLE sharedMemoryHandle;
+CallCountContainer* callCountContainer;
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
@@ -23,6 +26,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     case DLL_PROCESS_ATTACH:
     {
         std::cout << "Attach\n";
+        /*
         //Connect to named pipe
         std::string pipeName = pipeBaseName;
         pipeName.append(std::to_string(GetCurrentProcessId()));
@@ -43,12 +47,23 @@ BOOL APIENTRY DllMain( HMODULE hModule,
             );
             std::cout << "trying to connect" << std::endl;
         } while (pipeHandle == INVALID_HANDLE_VALUE);
-  
+        */
+
+        //Open shared memory from monitor process
+        std::string pipeName = pipeBaseName;
+        pipeName.append(std::to_string(GetCurrentProcessId()));
+        std::cout << pipeName << std::endl;
+        std::wstring temp = std::wstring(pipeName.begin(), pipeName.end());
+        LPCWSTR fullString = temp.c_str();
+        sharedMemoryHandle = OpenFileMappingW(FILE_MAP_ALL_ACCESS, FALSE, fullString);
+        callCountContainer = (CallCountContainer*)MapViewOfFile(sharedMemoryHandle, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(CallCountContainer));
+
+        callCountContainer->test = 4;
         //Hook API calls
-        hookAPICalls();
+        //hookAPICalls();
        
         //Start messenger thread
-        messengerThread = CreateThread(NULL, 0, MessengerThreadExecute, NULL, 0, NULL);
+        //messengerThread = CreateThread(NULL, 0, MessengerThreadExecute, NULL, 0, NULL);
     }
         break;
     case DLL_THREAD_ATTACH:
