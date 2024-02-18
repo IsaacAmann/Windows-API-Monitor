@@ -76,10 +76,39 @@ int main()
 			(LPBYTE)token,
 			strlen(token)
 		);
+		//Set global variables for credentials
+		clientId = enteredUUID;
+		apiKey = enteredToken;
 	}
 	else
 	{
 		std::cout << "Opened existing key\n";
+		char uuid[MAX_PATH];
+		char token[MAX_PATH];
+		DWORD size = MAX_PATH;
+		RegGetValueA(
+			uuidKey,
+			NULL,
+			NULL,
+			RRF_RT_REG_SZ,
+			NULL,
+			uuid,
+			&size
+		);
+
+		size = MAX_PATH;
+		RegGetValueA(
+			tokenKey,
+			NULL,
+			NULL,
+			RRF_RT_REG_SZ,
+			NULL,
+			token,
+			&size
+		);
+		
+		clientId = std::string(uuid);
+		apiKey = std::string(token);
 	}
 
 	
