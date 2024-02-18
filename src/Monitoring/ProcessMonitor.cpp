@@ -6,7 +6,7 @@ extern std::string clientId;
 extern std::string apiKey;
 extern std::string API_ENDPOINT;
 
-const bool USE_TEST_PID = false;
+const bool USE_TEST_PID = true;
 const int TEST_PID = 21484;
 
 ProcessMonitor::~ProcessMonitor()

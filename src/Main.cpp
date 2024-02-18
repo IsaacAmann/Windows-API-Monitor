@@ -9,6 +9,80 @@ int main()
 	API_ENDPOINT = "http://localhost:8080";
 	testHTTPRequest();
 	//Get API key
+	//Check registry to see if ID and key are present already
+	DWORD keyDisposition;
+	HKEY uuidKey, tokenKey;
+
+	std::string enteredUUID, enteredToken;
+
+	LSTATUS registryOpenResult = RegCreateKeyExA(
+		HKEY_CURRENT_USER,
+		"WindowsAPIMonitor/Credentials/ClientUUID",
+		0,
+		NULL,
+		REG_OPTION_NON_VOLATILE,
+		KEY_ALL_ACCESS,
+		NULL,
+		&uuidKey,
+		&keyDisposition
+	);
+
+	registryOpenResult = RegCreateKeyExA(
+		HKEY_CURRENT_USER,
+		"WindowsAPIMonitor/Credentials/ClientToken",
+		0,
+		NULL,
+		REG_OPTION_NON_VOLATILE,
+		KEY_ALL_ACCESS,
+		NULL,
+		&tokenKey,
+		&keyDisposition
+	);
+
+	//No credentials, prompt for new credentials
+	if (keyDisposition == REG_CREATED_NEW_KEY)
+	{
+		bool valid = false;
+		while (!valid)
+		{
+			std::cout << "First time setup\n";
+			std::cout << "Enter client UUID >> ";
+			std::cin >> enteredUUID;
+
+			std::cout << "Enter API token >> ";
+			std::cin >> enteredToken;
+
+			//Verify credentials with server
+			std::cout << "Validating credentials with server...\n";
+			//Add function for making a http request to server later
+			valid = true;
+		}
+		//Set value of registry keys
+		const char* uuid = enteredUUID.c_str();
+		const char* token = enteredToken.c_str();
+		RegSetValueExA(
+			uuidKey,
+			NULL,
+			0,
+			REG_SZ,
+			(LPBYTE)uuid,
+			strlen(uuid)
+		);
+		RegSetValueExA(
+			tokenKey,
+			NULL,
+			0,
+			REG_SZ,
+			(LPBYTE)token,
+			strlen(token)
+		);
+	}
+	else
+	{
+		std::cout << "Opened existing key\n";
+	}
+
+	
 	apiKey = "testKey";
 	clientId = "testClientId";
 	//Verify key with server
