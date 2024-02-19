@@ -21,7 +21,7 @@ function. The Windows API functions hooked can be found in TrackedProcess.h
 https://github.com/IsaacAmann/Windows-API-Monitor/blob/master/src/Monitoring/TrackedProcess.h
 
 ### Interprocess Communication
-Initially used a named pipe to use message passing for communication. Switched over to use named shared memory for communication.
+Initially used a named pipe to use message passing for communication. Switched over to using named shared memory for communication.
 
 ### Posting Datapoints
 Collected data is posted to the server through HTTP. The source code for the server application can be found at the following repository: https://github.com/IsaacAmann/Windows-API-Monitor-Collection-Server
