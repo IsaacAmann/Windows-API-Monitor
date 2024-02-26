@@ -7,7 +7,7 @@ ProcessMonitor* monitor;
 int main()
 {
 	API_ENDPOINT = "http://localhost:8080";
-	testHTTPRequest();
+	//testHTTPRequest();
 	//Get API key
 	//Check registry to see if ID and key are present already
 	DWORD keyDisposition;
@@ -112,8 +112,8 @@ int main()
 	}
 
 	
-	apiKey = "testKey";
-	clientId = "testClientId";
+	//apiKey = "testKey";
+	//clientId = "testClientId";
 	//Verify key with server
 
 	//Start monitoring

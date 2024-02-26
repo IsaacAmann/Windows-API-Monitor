@@ -2,12 +2,13 @@
 
 using json = nlohmann::json;
 
+//Extern variables defined in Main.h
 extern std::string clientId;
 extern std::string apiKey;
 extern std::string API_ENDPOINT;
 
 const bool USE_TEST_PID = true;
-const int TEST_PID = 21484;
+const int TEST_PID = 15212;
 
 ProcessMonitor::~ProcessMonitor()
 {
@@ -80,7 +81,7 @@ void sendDataPoint(TrackedProcess* process)
 	CURL* curl;
 	CURLcode response;
 
-	std::string url = API_ENDPOINT + "/test";
+	std::string url = API_ENDPOINT + "/postDatapoint";
 	std::cout << "url: " << url <<std::endl ;
 	curl = curl_easy_init();
 
@@ -103,7 +104,7 @@ void sendDataPoint(TrackedProcess* process)
 		json payload;
 
 		//Set clientId and apiKey for json
-		payload["clientId"] = clientId;
+		payload["uuid"] = clientId;
 		payload["token"] = apiKey;
 
 		//Set process info
