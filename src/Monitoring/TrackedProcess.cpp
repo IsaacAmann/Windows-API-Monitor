@@ -2,10 +2,14 @@
 
 //Base name for shared memory, should be appended with PID for the process
 std::string pipeBaseName = "Local\\APIMonitor";
-char libPath[_MAX_PATH] = "C:\\Users\\isaac\\Documents\\programming\\Windows-API-Monitor\\x64\\Debug\\PolyHookMonitorDLL.dll";
+char libPath[_MAX_PATH];
 //char libPath[_MAX_PATH] = "C:\\Users\\isaac\\Documents\\programming\\Windows-API-Monitor\\x64\\Debug\\MonitorDLL.dll";
 TrackedProcess::TrackedProcess(HANDLE processHandle, DWORD PID)
 {
+	//Get dll path
+	DWORD length = GetCurrentDirectoryA(_MAX_PATH, libPath);
+	strcat(libPath, "\\PolyHookMonitorDLL.dll");
+	std::cout << libPath << std::endl;
 	this->processHandle = processHandle;
 	this->PID = PID;
 	processRunning = true;

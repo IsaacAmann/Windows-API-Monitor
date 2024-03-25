@@ -12,6 +12,7 @@
 #include <thread>
 #include <mutex>
 #include <unordered_map>
+#include <cstring>
 
 
 typedef struct CallCountContainer
