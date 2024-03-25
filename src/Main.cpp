@@ -6,7 +6,7 @@ void testHTTPRequest();
 ProcessMonitor* monitor;
 int main()
 {
-	API_ENDPOINT = "http://localhost:8080";
+	API_ENDPOINT = "http://winapimonitoring.com:8080";
 	//testHTTPRequest();
 	//Get API key
 	//Check registry to see if ID and key are present already
