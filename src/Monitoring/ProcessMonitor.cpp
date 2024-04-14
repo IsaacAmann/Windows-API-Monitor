@@ -264,6 +264,18 @@ void ProcessMonitor::scanForProcesses()
 					break;
 				}
 			}
+
+			//Check that process is not a Windows store app
+			//They are sandboxed and crash upon DLL injection
+			//Using GetPackageFamilyName to see if it returns error, see following stack overflow post
+			//https://stackoverflow.com/questions/52207484/determine-if-c-application-is-running-as-a-uwp-app-with-legacy-support
+			UINT32 packageNameLength = 0;
+			LONG packageError = GetPackageFamilyName(process, &packageNameLength, NULL);
+			if (packageError == ERROR_INSUFFICIENT_BUFFER)
+			{
+				std::cout << "Skipping UWP process\n";
+			}
+			
 			
 			if (excluded == true)
 			{

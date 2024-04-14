@@ -14,7 +14,7 @@
 #include <unordered_map>
 #include <json.hpp>
 #include "TrackedProcess.h"
-
+#include <appmodel.h>
 
 
 
